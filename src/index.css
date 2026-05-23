@@ -1,0 +1,80 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #0f172a; /* Slate 900 */
+  --color-primary-hover: #1e293b; /* Slate 800 */
+  --color-accent: #2563eb; /* Blue 600 */
+  --color-accent-hover: #1d4ed8; /* Blue 700 */
+  --color-success: #16a34a; /* Green 600 */
+  --color-danger: #dc2626; /* Red 600 */
+  --color-warning: #d97706; /* Amber 600 */
+  
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+body {
+  background-color: #f8fafc; /* Slate 50 */
+  color: #0f172a; /* Slate 900 */
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Standard Clean Card */
+.clean-card {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0; /* Slate 200 */
+  border-radius: 0.75rem; /* xl */
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+}
+
+/* Primary Button */
+.btn-primary {
+  background-color: var(--color-primary);
+  color: #ffffff;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  transition: background-color 0.2s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.btn-primary:hover {
+  background-color: var(--color-primary-hover);
+}
+
+/* Secondary Button */
+.btn-secondary {
+  background-color: #ffffff;
+  color: var(--color-primary);
+  border: 1px solid #cbd5e1; /* Slate 300 */
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.btn-secondary:hover {
+  background-color: #f1f5f9; /* Slate 100 */
+  border-color: #94a3b8; /* Slate 400 */
+}
+
+/* Standard inputs */
+.form-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 0.5rem;
+  background-color: #ffffff;
+  color: #0f172a;
+  transition: border-color 0.2s;
+}
+.form-input:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
