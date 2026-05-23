@@ -194,7 +194,7 @@ export const seedCases: ClinicalCase[] = [
             { name: 'K+', value: '5.4', unit: 'mEq/L', reference: '3.5-5.0', is_abnormal: true },
           ],
         },
-        questions: [\n          {
+        questions: [ {
         id: 'q-001-6', case_id: 'seed-001',
         question_text: 'What is the risk of keeping the patient on both Diclofenac and an ACE inhibitor if they develop renal decline?',
         option_a: 'Increased liver enzymes',
@@ -5637,7 +5637,7 @@ export const seedCases: ClinicalCase[] = [
             { name: 'Tacrolimus Trough Level', value: '24.2', unit: 'ng/mL', reference: '5.0-10.0', is_abnormal: true },
           ],
         },
-        questions: [\n          {
+        questions: [ {
         id: 'q-030-2', case_id: 'seed-030',
         question_text: 'How should the Tacrolimus therapeutic drug monitoring (TDM) sample be collected, and what is the target range for a patient 6 months post-transplant?',
         option_a: 'Draw a random plasma sample at any time; target range 15-20 ng/mL',
@@ -5649,7 +5649,7 @@ export const seedCases: ClinicalCase[] = [
         question_type: 'mcq',
         explanation_text: 'Tacrolimus TDM must be performed using whole blood (as it concentrates in erythrocytes) rather than serum or plasma. Troughs (C0) must be drawn immediately before the next dose (typically 12 hours after the last dose). At 6 months post-renal transplant, the target trough level is 5-10 ng/mL (lower than the initial post-op target of 10-15 ng/mL).',
         subject_reference: 'Clinical Pharmacokinetics - TDM',
-      },\n          {
+      }, {
         id: 'q-030-3', case_id: 'seed-030',
         question_text: 'What action should you take on Salim\'s medication chart to resolve the Tacrolimus toxicity?',
         option_a: 'Increase the Tacrolimus dose',
