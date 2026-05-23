@@ -4,15 +4,11 @@ const file = 'src/lib/seed-cases.ts';
 try {
   let data = fs.readFileSync(file, 'utf8');
 
-  // Replace hidden non-breaking spaces with normal spaces
-  data = data.replace(/\xA0/g, ' ');
-  // Replace smart quotes and backticks with standard single quotes
-  data = data.replace(/[‘’`]/g, "'");
-  // Replace smart double quotes with standard double quotes
-  data = data.replace(/[“”]/g, '"');
+  // This regex hunts down all Zero-Width Spaces, Non-Joiners, and Byte Order Marks
+  data = data.replace(/[\u200B-\u200D\uFEFF\u2028\u2029]/g, '');
 
   fs.writeFileSync(file, data, 'utf8');
-  console.log('Success! File successfully scrubbed.');
+  console.log('Success! Deep scrub complete. All zero-width characters removed.');
 } catch (err) {
-  console.error('Error finding or reading the file. Make sure you are in the root folder!', err);
+  console.error('Error:', err);
 }
