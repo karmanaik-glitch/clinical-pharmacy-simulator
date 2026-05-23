@@ -6,6 +6,13 @@ import type { PCIDutyCategory, SubjectArea, GradeBand } from './types';
 
 // ---- PCI Duty Categories ----
 export const PCI_DUTIES: Record<PCIDutyCategory, { label: string; shortLabel: string; color: string; bgColor: string; icon: string }> = {
+  prescription_review: {
+    label: 'Prescription Review',
+    shortLabel: 'Presc. Review',
+    color: 'hsl(200, 80%, 50%)',
+    bgColor: 'hsl(200, 80%, 50%, 0.15)',
+    icon: 'FileText',
+  },  
   treatment_chart_review: {
     label: 'Treatment Chart Review',
     shortLabel: 'Chart Review',
