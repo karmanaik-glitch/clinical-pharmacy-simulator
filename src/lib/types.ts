@@ -8,6 +8,7 @@ export type SessionStatus = 'in_progress' | 'completed';
 
 export type PCIDutyCategory =
   | 'treatment_chart_review'
+  | 'prescription_review'
   | 'drug_therapy_monitoring'
   | 'adr_detection'
   | 'drug_interaction'
