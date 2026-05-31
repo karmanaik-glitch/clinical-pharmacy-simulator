@@ -2930,30 +2930,2751 @@ export const seedCases: ClinicalCase[] = [
         {
           question_text: 'Why is Propranolol an important adjunct therapy in hyperthyroidism and Graves\' crisis?',
           rationale: 'Thyroid hormones (T3/T4) sensitize the cardiovascular system to catecholamines by UPREGULATING beta-adrenergic receptors (increased receptor density and sensitivity). This explains the tachycardia, palpitations, tremor, anxiety, and heat intolerance of hyperthyroidism — these are ALL mediated through heightened sympathetic tone. Propranolol (non-selective beta-blocker) directly blocks beta-1 (heart: reduces heart rate, contractility) and beta-2 (peripheral vasodilation, tremor) receptors. Additionally, Propranolol at high doses INHIBITS peripheral conversion of T4 to the more potent T3 (by inhibiting type 1 deiodinase), providing an additional mild anti-thyroid benefit. Propranolol does NOT affect thyroid hormone synthesis or release — it only controls symptoms while waiting for ATD or definitive therapy to take effect.'
+        },{
+    id: 'seed-001',
+    title: 'Uncontrolled Diabetes, CKD, and Polypharmacy',
+    subject_area: 'endocrine',
+    difficulty: 'hard',
+    tags: ['Diabetes', 'CKD', 'Deprescribing', 'SGLT2i', 'Sick Day Rules'],
+    source: 'seed',
+    created_at: '2025-01-01T00:00:00Z',
+    
+    // ==========================================
+    // PHASE 1: WARD ROUND ADMISSION (MED REC)
+    // ==========================================
+    phases: [
+      {
+        id: 'seed-001-phase-1',
+        title: 'Day 1: Ward Round Admission',
+        description: 'Mr. Ramesh Kumar is admitted to the general medicine ward with uncontrolled hyperglycemia and mild chest tightness. Review his baseline profile, labs, and active chart for immediate safety interventions.',
+        patient_snapshot: {
+          name: 'Ramesh Kumar',
+          age: 58,
+          sex: 'M',
+          ward: 'General Medicine',
+          bed: '12',
+          presenting_complaint: 'Chest pain, breathlessness for 2 days. Worsening knee pain.',
+          pmh: ['T2DM (10 years)', 'Hypertension (5 years)', 'Osteoarthritis (3 years)'],
+          medications: [
+            { drug: 'Metformin', dose: '500 mg', frequency: 'BD', route: 'Oral' },
+            { drug: 'Glibenclamide', dose: '5 mg', frequency: 'OD', route: 'Oral' },
+            { drug: 'Amlodipine', dose: '5 mg', frequency: 'OD', route: 'Oral' },
+            { drug: 'Aspirin', dose: '75 mg', frequency: 'OD', route: 'Oral' },
+            { drug: 'Pantoprazole', dose: '40 mg', frequency: 'OD', route: 'Oral' },
+            { drug: 'Diclofenac', dose: '50 mg', frequency: 'BD', route: 'Oral' },
+          ],
+          allergies: ['Penicillin (rash)'],
+          labs: [
+            { name: 'FBS', value: '210', unit: 'mg/dL', reference: '70-110', is_abnormal: true },
+            { name: 'HbA1c', value: '9.2', unit: '%', reference: '<7.0', is_abnormal: true },
+            { name: 'SCr', value: '1.8', unit: 'mg/dL', reference: '0.7-1.3', is_abnormal: true },
+            { name: 'eGFR', value: '38', unit: 'mL/min', reference: '>60', is_abnormal: true },
+            { name: 'K+', value: '4.8', unit: 'mEq/L', reference: '3.5-5.0', is_abnormal: false },
+          ],
+        },
+        questions: [
+          {
+            id: 'q-001-1', case_id: 'seed-001',
+            question_text: 'Ramesh has been self-administering Diclofenac 50mg BD for right knee osteoarthritis pain. Given his eGFR of 38 mL/min, what is the most appropriate clinical pharmacist intervention?',
+            option_a: 'Continue Diclofenac as it is effective for pain, but add a PPI.',
+            option_b: 'Discontinue Diclofenac due to severe risk of nephrotoxicity and switch to oral Paracetamol 650mg TDS PRN.',
+            option_c: 'Increase Diclofenac to 75mg BD to treat knee pain aggressively so he can mobilize.',
+            option_d: 'Switch to Ibuprofen 400mg TDS, as it is safer for the kidneys.',
+            correct_option: 'B',
+            pci_duty_category: 'treatment_chart_review',
+            question_type: 'mar_action',
+            target_drug: 'Diclofenac',
+            explanation_text: 'NSAIDs (Diclofenac) block cyclooxygenase (COX) enzymes, reducing renal prostaglandin synthesis. Prostaglandins are critical for maintaining afferent arteriolar vasodilation. In a patient with renal decline (eGFR 38), NSAID use causes afferent vasoconstriction, precipitously dropping GFR and triggering acute-on-chronic kidney injury.',
+            subject_reference: 'Pharmacotherapeutics - Drug Safety',
+          },
+          {
+            id: 'q-001-2', case_id: 'seed-001',
+            question_text: 'Which action should you take regarding his home Metformin dose based on his current renal function?',
+            option_a: 'Continue unchanged; Metformin is safe until eGFR < 15 mL/min.',
+            option_b: 'Hold / Temporarily Suspend until SCr normalizes.',
+            option_c: 'Discontinue permanently.',
+            option_d: 'Reduce dose by 50% (e.g., to 500mg OD).',
+            correct_option: 'D',
+            pci_duty_category: 'treatment_chart_review',
+            question_type: 'mar_action',
+            target_drug: 'Metformin',
+            explanation_text: 'Metformin requires dose reduction when eGFR is 30-44 mL/min due to the risk of renal accumulation and lactic acidosis. At eGFR 38, the dose should be reduced by 50% (max 1000mg/day). It is only discontinued completely if eGFR falls below 30 mL/min.',
+            subject_reference: 'Pharmacotherapeutics - Diabetes',
+          }
+        ]
+      },
+      
+      // ==========================================
+      // PHASE 2: WARD ROUND (ADRs & OPTIMIZATION)
+      // ==========================================
+      {
+        id: 'seed-001-phase-2',
+        title: 'Day 3: Clinical Deterioration & Therapy Change',
+        description: 'To control his blood pressure and provide renoprotection, the attending team started Enalapril 5mg OD yesterday. Today, he complains of a persistent dry cough and experienced a hypoglycemic episode (Blood Glucose 54 mg/dL) overnight.',
+        patient_snapshot: {
+          name: 'Ramesh Kumar',
+          age: 58,
+          sex: 'M',
+          ward: 'General Medicine',
+          bed: '12',
+          presenting_complaint: 'Dry persistent cough, fatigue, night sweats (hypoglycemia).',
+          pmh: ['T2DM (10 years)', 'Hypertension (5 years)', 'Osteoarthritis (3 years)'],
+          medications: [
+            { drug: 'Metformin', dose: '500 mg', frequency: 'OD', route: 'Oral' },
+            { drug: 'Glibenclamide', dose: '5 mg', frequency: 'OD', route: 'Oral' },
+            { drug: 'Amlodipine', dose: '5 mg', frequency: 'OD', route: 'Oral' },
+            { drug: 'Enalapril', dose: '5 mg', frequency: 'OD', route: 'Oral' },
+            { drug: 'Aspirin', dose: '75 mg', frequency: 'OD', route: 'Oral' },
+          ],
+          allergies: ['Penicillin (rash)'],
+          labs: [
+            { name: 'FBS', value: '54', unit: 'mg/dL', reference: '70-110', is_abnormal: true },
+            { name: 'SCr', value: '2.0', unit: 'mg/dL', reference: '0.7-1.3', is_abnormal: true },
+            { name: 'K+', value: '5.1', unit: 'mEq/L', reference: '3.5-5.0', is_abnormal: true },
+          ],
+        },
+        questions: [
+          {
+            id: 'q-001-3', case_id: 'seed-001',
+            question_text: 'The patient developed a dry persistent cough after starting Enalapril. What is the most appropriate MAR action?',
+            option_a: 'Reduce Enalapril to 2.5 mg OD.',
+            option_b: 'Add Dextromethorphan syrup for the cough.',
+            option_c: 'Discontinue Enalapril and switch to an ARB (e.g., Losartan).',
+            option_d: 'Continue Enalapril; the cough will subside in a few days.',
+            correct_option: 'C',
+            pci_duty_category: 'adr_detection',
+            question_type: 'mar_action',
+            target_drug: 'Enalapril',
+            explanation_text: 'ACE inhibitor-induced cough occurs in 5-20% of patients due to bradykinin accumulation and is a class effect — dose reduction will not help. The appropriate intervention is to discontinue the ACEi and switch to an ARB, which does not inhibit bradykinin breakdown.',
+            subject_reference: 'Pharmacotherapeutics - Cardiovascular',
+          },
+          {
+            id: 'q-001-4', case_id: 'seed-001',
+            question_text: 'What is the most likely cause of his nocturnal hypoglycemia (FBS 54 mg/dL) given his clinical profile?',
+            option_a: 'Metformin overdose.',
+            option_b: 'Accumulation of active Glibenclamide metabolites due to his reduced eGFR.',
+            option_c: 'Interaction between Amlodipine and Aspirin.',
+            option_d: 'Enalapril-induced hyperinsulinemia.',
+            correct_option: 'B',
+            pci_duty_category: 'drug_therapy_monitoring',
+            question_type: 'mcq',
+            explanation_text: 'Glibenclamide (a long-acting sulfonylurea) has active metabolites that are renally cleared. In patients with CKD (eGFR 38), these metabolites accumulate, significantly increasing the risk of severe, prolonged hypoglycemia. He should be switched to a safer agent like a DPP-4 inhibitor (e.g., Linagliptin) or a shorter-acting sulfonylurea (Glipizide).',
+            subject_reference: 'Pharmacotherapeutics - Diabetes',
+          }
+        ]
+      },
+
+      // ==========================================
+      // PHASE 3: DISCHARGE & COUNSELING
+      // ==========================================
+      {
+        id: 'seed-001-phase-3',
+        title: 'Day 5: Discharge & Counseling',
+        description: 'Ramesh is stabilizing. His BP is well-controlled on Losartan, and his cough has resolved. The team is preparing his discharge prescriptions and asks for your input on long-term disease modification.',
+        patient_snapshot: {
+          name: 'Ramesh Kumar',
+          age: 58,
+          sex: 'M',
+          ward: 'General Medicine',
+          bed: '12',
+          presenting_complaint: 'Ready for discharge.',
+          pmh: ['T2DM', 'Hypertension', 'CKD Stage 3b'],
+          medications: [
+            { drug: 'Metformin', dose: '500 mg', frequency: 'OD', route: 'Oral' },
+            { drug: 'Linagliptin', dose: '5 mg', frequency: 'OD', route: 'Oral' },
+            { drug: 'Losartan', dose: '50 mg', frequency: 'OD', route: 'Oral' },
+            { drug: 'Amlodipine', dose: '5 mg', frequency: 'OD', route: 'Oral' },
+            { drug: 'Aspirin', dose: '75 mg', frequency: 'OD', route: 'Oral' },
+          ],
+          allergies: ['Penicillin (rash)', 'Enalapril (Cough)'],
+          labs: [
+            { name: 'FBS', value: '115', unit: 'mg/dL', reference: '70-110', is_abnormal: false },
+            { name: 'SCr', value: '1.9', unit: 'mg/dL', reference: '0.7-1.3', is_abnormal: true },
+            { name: 'eGFR', value: '38', unit: 'mL/min', reference: '>60', is_abnormal: true },
+          ],
+        },
+        questions: [
+          {
+            id: 'q-001-5', case_id: 'seed-001',
+            question_text: 'Per KDIGO/ADA guidelines, which medication class should be ADDED to his discharge regimen to slow CKD progression and reduce heart failure risk?',
+            option_a: 'Thiazolidinedione (e.g., Pioglitazone)',
+            option_b: 'SGLT2 Inhibitor (e.g., Dapagliflozin)',
+            option_c: 'Loop Diuretic (e.g., Furosemide)',
+            option_d: 'Alpha-blocker (e.g., Prazosin)',
+            correct_option: 'B',
+            pci_duty_category: 'evaluate',
+            question_type: 'mcq',
+            explanation_text: 'SGLT2 inhibitors (Dapagliflozin, Empagliflozin) have profound cardiorenal benefits independent of glycemic control. Guidelines mandate their use in patients with T2DM and CKD (eGFR ≥ 20 mL/min) to delay the progression to end-stage renal disease.',
+            subject_reference: 'Pharmacotherapeutics - Nephrology',
+          },
+          {
+            id: 'q-001-6', case_id: 'seed-001',
+            question_text: 'You are counseling Ramesh on "Sick Day Rules." If he develops severe gastroenteritis (vomiting/diarrhea) at home, which medications must he temporarily suspend?',
+            option_a: 'Amlodipine and Aspirin',
+            option_b: 'Metformin, Losartan, and his new SGLT2 Inhibitor',
+            option_c: 'Linagliptin only',
+            option_d: 'He should not stop any medications without visiting the ER.',
+            correct_option: 'B',
+            pci_duty_category: 'patient_counselling',
+            question_type: 'mcq',
+            explanation_text: 'During dehydrating illnesses, patients must hold medications that can cause AKI or metabolic complications (SADMANS mnemonic). Holding Metformin prevents lactic acidosis; holding Losartan prevents pre-renal AKI; holding SGLT2is prevents euglycemic DKA.',
+            subject_reference: 'Pharmacy Practice - Patient Counseling',
+          }
+        ]
+      }
+    ],
+    
+    // ==========================================
+    // COMPREHENSIVE STUDY GUIDE
+    // ==========================================
+    study_guide: {
+      guidelines: [
+        {
+          title: 'ADA Standards of Care in Diabetes (2024)',
+          organization: 'ADA',
+          text: 'Metformin dosing must be adjusted based on renal function. Do not initiate Metformin if eGFR is <45 mL/min. If eGFR falls to 30-44 mL/min during therapy, evaluate the risk-benefit and consider a 50% dose reduction (max 1000mg/day). Discontinue Metformin if eGFR falls below 30 mL/min due to the increased risk of metformin-associated lactic acidosis (MALA).'
         },
         {
-          question_text: 'Why should ATD not be restarted even when agranulocytosis resolves?',
-          rationale: 'Once a patient develops ATD-induced agranulocytosis from one agent (Carbimazole), approximately 50% of patients will develop the same reaction if re-challenged with the alternative ATD (PTU), due to cross-reactivity in the immune mechanism. Since both available ATDs share the thionamide chemical structure and similar immunogenic potential, neither can be safely restarted. This means the patient is permanently excluded from ATD therapy. Definitive options: (1) Radioiodine I-131 therapy (most common — wait 3-6 months after agranulocytosis for bone marrow recovery and to ensure no active Graves\' ophthalmopathy); (2) Thyroidectomy (requires euthyroid state first — achieved with Lugol\'s Iodine, Propranolol, and/or Cholestyramine before surgery).'
+          title: 'KDIGO Clinical Practice Guideline for Diabetes Management in CKD (2023)',
+          organization: 'KDIGO',
+          text: 'First-line therapy for patients with T2DM and CKD includes Metformin and an SGLT2 inhibitor. SGLT2 inhibitors (like Dapagliflozin) reduce intraglomerular pressure, drastically slowing renal decline. RAAS blockade (ACEi or ARB) remains the cornerstone for hypertension and albuminuria. A rise in creatinine of up to 30% from baseline is expected and acceptable after starting an ACEi/ARB; discontinue only if it rises >30% or potassium exceeds 5.5 mEq/L.'
+        }
+      ],
+      calculations: [
+        {
+          name: 'Cockcroft-Gault Creatinine Clearance',
+          formula: 'CrCl (mL/min) = [ (140 - Age) × Weight (kg) ] / [ 72 × Serum Creatinine (mg/dL) ]  (× 0.85 if Female)',
+          explanation: 'This equation estimates renal function to guide drug dosing. Crucially, in obese patients, Ideal Body Weight (IBW) or Adjusted Body Weight should be used instead of actual weight to prevent drug overdosing, especially for renally cleared agents.'
+        }
+      ],
+      reasoning: [
+        {
+          question_text: 'Why does the combination of Diclofenac and an ACE Inhibitor cause Acute Kidney Injury (The Triple Whammy)?',
+          rationale: 'Normally, renal blood flow is maintained by prostaglandins (which dilate the afferent arteriole) and Angiotensin II (which constricts the efferent arteriole). NSAIDs (Diclofenac) block prostaglandins, causing afferent constriction (less blood flows in). ACE inhibitors block Ang II, causing efferent dilation (blood flows out too fast). Together, they destroy glomerular hydrostatic pressure, leading to acute kidney injury, especially when the patient is already renally compromised.'
+        },
+        {
+          question_text: 'Why switch from Enalapril to Losartan instead of reducing the dose?',
+          rationale: 'Dry cough is a class-wide Adverse Drug Reaction of ACE inhibitors. It is caused by the accumulation of bradykinin and substance P in the respiratory tract due to ACE inhibition. It is not dose-dependent. Switching to an ARB (like Losartan) resolves the cough because ARBs block angiotensin receptors without inhibiting the kinase enzyme that degrades bradykinin.'
         }
       ],
       mnemonics: [
         {
-          name: 'Antithyroid Drug Side Effects and Warnings (A-T-H-E-N-A)',
-          concept: 'ADRs of Carbimazole/Methimazole and PTU — mandatory patient counseling points',
+          name: 'Sick Day Rules (S-A-D-M-A-N-S)',
+          concept: 'Medications to temporarily HOLD during severe dehydrating illness (vomiting, diarrhea, high fever) to prevent AKI and metabolic crises.',
           bullets: [
-            'A — Agranulocytosis (0.1-0.5%): STOP IMMEDIATELY if fever + sore throat. Get CBC same day. PTU also causes agranulocytosis',
-            'T — Teratogenicity: Methimazole/Carbimazole causes aplasia cutis and choanal atresia — use PTU in first trimester',
-            'H — Hepatotoxicity: PTU-specific fulminant hepatic failure (rare, 0.1%). Carbimazole causes cholestatic jaundice (less severe). Check LFTs if jaundice develops',
-            'E — Embryopathy: Both ATDs cross placenta. PTU preferred Q1 (lower teratogenicity). Methimazole preferred Q2-3',
-            'N — Neutropenia: Most common serious ADR. Occurs within 3 months of starting ATD in 70% of cases. Baseline CBC mandatory before initiation',
-            'A — Arthralgia/Rash: Common minor ADRs (5-10%). Drug fever, lupus-like syndrome (especially with PTU). Cross-reactivity between ATDs for these reactions as well'
+            'S — Sulfonylureas (Risk of hypoglycemia if not eating)',
+            'A — ACE Inhibitors (Risk of pre-renal AKI)',
+            'D — Diuretics (Worsens dehydration)',
+            'M — Metformin (Risk of lactic acidosis in AKI)',
+            'A — ARBs (Risk of pre-renal AKI)',
+            'N — NSAIDs (Risk of acute kidney injury)',
+            'S — SGLT2 inhibitors (Risk of euglycemic DKA with poor oral intake)'
+          ]
+        },
+        {
+          name: 'ACEi Side Effects (CAPTOPRIL)',
+          concept: 'Remembering ACE inhibitor adverse effects',
+          bullets: [
+            'C — Cough (dry, persistent)',
+            'A — Angioedema (life-threatening airway swelling)',
+            'P — Potassium elevation (hyperkalemia)',
+            'T — Taste alteration (metallic taste)',
+            'O — Orthostatic hypotension (first-dose effect)',
+            'P — Pregnancy contraindication (teratogenicity)',
+            'R — Renal function decline (acute kidney injury)',
+            'I — Indomethacin/NSAID interaction (blunts antihypertensive effect)',
+            'L — Leukopenia (rare neutropenia risk)'
           ]
         }
       ]
-    },
-    tags: ['agranulocytosis', 'carbimazole', 'graves-disease', 'G-CSF', 'hypersensitivity'],
+    }
+  },
+// CASE 2: INFECTIOUS DISEASES
+  {
+    id: 'seed-002',
+    title: 'Pulmonary TB — DOTS Drug Interactions',
+    subject_area: 'infectious_diseases',
+    difficulty: 'hard',
+    tags: ['Tuberculosis', 'NTEP', 'Drug Interactions', 'Hepatotoxicity'],
     source: 'seed',
-    created_at: '2025-01-15T00:00:00Z',
+    created_at: '2025-01-02T00:00:00Z',
+    phases: [
+      {
+        id: 'seed-002-phase-1',
+        title: 'Day 1: ATT Initiation & Med Rec',
+        description: 'Lakshmi is newly started on HRZE therapy. Review the medication chart for drug interactions with her home Levothyroxine and iron supplement.',
+        patient_snapshot: {
+          name: 'Lakshmi Devi', age: 45, sex: 'F', ward: 'Pulmonology', bed: '8',
+          presenting_complaint: 'Newly diagnosed pulmonary TB. Home meds: Levothyroxine, Ferrous Sulfate.',
+          pmh: ['Pulmonary TB', 'Hypothyroidism'],
+          medications: [
+            { drug: 'Isoniazid', dose: '300 mg', frequency: 'OD', route: 'Oral' },
+            { drug: 'Rifampicin', dose: '450 mg', frequency: 'OD', route: 'Oral' },
+            { drug: 'Pyrazinamide', dose: '1500 mg', frequency: 'OD', route: 'Oral' },
+            { drug: 'Ethambutol', dose: '800 mg', frequency: 'OD', route: 'Oral' },
+            { drug: 'Levothyroxine', dose: '100 mcg', frequency: 'OD', route: 'Oral' },
+            { drug: 'Ferrous Sulfate', dose: '325 mg', frequency: 'OD', route: 'Oral' },
+          ],
+          allergies: [],
+          labs: [
+            { name: 'TSH', value: '12.5', unit: 'mIU/L', reference: '0.5-4.5', is_abnormal: true },
+          ],
+        },
+        questions: [
+          {
+            id: 'q-002-1', case_id: 'seed-002',
+            question_text: 'Lakshmi reports taking all her medications together with breakfast. Her TSH is elevated. What is the cause and intervention?',
+            option_a: 'Levothyroxine dose is too low; increase to 200 mcg.',
+            option_b: 'Rifampicin induces metabolism AND Iron impairs absorption. Separate doses and monitor TSH.',
+            option_c: 'Isoniazid directly inhibits Levothyroxine absorption.',
+            option_d: 'TSH is falsely elevated by active TB infection.',
+            correct_option: 'B',
+            pci_duty_category: 'drug_interaction',
+            question_type: 'mar_action',
+            target_drug: 'Levothyroxine',
+            explanation_text: 'Rifampicin is a potent CYP inducer that clears Levothyroxine faster, while Iron chelates it in the gut. They must be separated by at least 4 hours, and TSH may require a Levothyroxine dose increase.',
+            subject_reference: 'Pharmacotherapeutics - Drug Interactions',
+          },
+          {
+            id: 'q-002-2', case_id: 'seed-002',
+            question_text: 'Which medication should be ADDED to her MAR to prevent a common neurological side effect of her regimen?',
+            option_a: 'Vitamin B12 (Cyanocobalamin)',
+            option_b: 'Vitamin B6 (Pyridoxine) 10-50 mg daily',
+            option_c: 'Folic Acid 5 mg daily',
+            option_d: 'Gabapentin 100 mg TDS',
+            correct_option: 'B',
+            pci_duty_category: 'treatment_chart_review',
+            question_type: 'mcq',
+            explanation_text: 'Isoniazid depletes Pyridoxine (B6), leading to peripheral neuropathy. Prophylactic B6 must be co-prescribed.',
+            subject_reference: 'Pharmacotherapeutics - TB Treatment',
+          }
+        ]
+      },
+      {
+        id: 'seed-002-phase-2',
+        title: 'Week 4: Hepatotoxicity & Visual Monitoring',
+        description: 'Follow-up visit to monitor hepatotoxicity and visual function.',
+        patient_snapshot: {
+          name: 'Lakshmi Devi', age: 45, sex: 'F', ward: 'Pulmonology', bed: '8',
+          presenting_complaint: 'Routine follow-up on ATT. Complains of mild nausea.',
+          pmh: ['Pulmonary TB', 'Hypothyroidism'],
+          medications: [
+            { drug: 'Isoniazid', dose: '300 mg', frequency: 'OD', route: 'Oral' },
+            { drug: 'Rifampicin', dose: '450 mg', frequency: 'OD', route: 'Oral' },
+            { drug: 'Pyrazinamide', dose: '1500 mg', frequency: 'OD', route: 'Oral' },
+            { drug: 'Ethambutol', dose: '800 mg', frequency: 'OD', route: 'Oral' },
+            { drug: 'Pyridoxine', dose: '40 mg', frequency: 'OD', route: 'Oral' }
+          ],
+          allergies: [],
+          labs: [
+            { name: 'ALT', value: '180', unit: 'U/L', reference: '7-56', is_abnormal: true },
+            { name: 'AST', value: '165', unit: 'U/L', reference: '10-40', is_abnormal: true },
+          ],
+        },
+        questions: [
+          {
+            id: 'q-002-3', case_id: 'seed-002',
+            question_text: 'Her ALT is >3x the upper limit of normal and she has nausea. What is the clinical action?',
+            option_a: 'Continue therapy and recheck in 1 week.',
+            option_b: 'Stop Ethambutol only.',
+            option_c: 'Stop all hepatotoxic drugs (INH, RIF, PZA) immediately until LFTs normalize.',
+            option_d: 'Add Ursodeoxycholic acid.',
+            correct_option: 'C',
+            pci_duty_category: 'drug_therapy_monitoring',
+            question_type: 'mcq',
+            explanation_text: 'ALT >3x ULN with symptoms (nausea) mandates immediate cessation of hepatotoxic ATT drugs to prevent fulminant liver failure. They are reintroduced sequentially once LFTs recover.',
+            subject_reference: 'Pharmacotherapeutics - TB Treatment',
+          },
+          {
+            id: 'q-002-4', case_id: 'seed-002',
+            question_text: 'Which visual side effect must be specifically monitored due to Ethambutol?',
+            option_a: 'Yellow-green halos around lights',
+            option_b: 'Optic neuritis causing red-green color blindness',
+            option_c: 'Cataracts',
+            option_d: 'Macular degeneration',
+            correct_option: 'B',
+            pci_duty_category: 'adr_detection',
+            question_type: 'mcq',
+            explanation_text: 'Ethambutol causes dose-dependent retrobulbar optic neuritis affecting visual acuity and color vision.',
+            subject_reference: 'Pharmacotherapeutics - TB Treatment',
+          }
+        ]
+      },
+      {
+        id: 'seed-002-phase-3',
+        title: 'Month 2: Transition Phase',
+        description: 'Lakshmi returns after 2 months. Her LFTs recovered and ATT was successfully restarted. Sputum is now AFB negative.',
+        patient_snapshot: {
+          name: 'Lakshmi Devi', age: 45, sex: 'F', ward: 'Pulmonology', bed: '8',
+          presenting_complaint: 'Joint pain in the big toe.',
+          pmh: ['Pulmonary TB', 'Hypothyroidism'],
+          medications: [
+            { drug: 'Isoniazid', dose: '300 mg', frequency: 'OD', route: 'Oral' },
+            { drug: 'Rifampicin', dose: '450 mg', frequency: 'OD', route: 'Oral' },
+          ],
+          allergies: [],
+          labs: [
+            { name: 'Sputum AFB', value: 'Negative', unit: '', reference: 'Negative', is_abnormal: false },
+            { name: 'Uric Acid', value: '9.5', unit: 'mg/dL', reference: '3.5-7.2', is_abnormal: true }
+          ],
+        },
+        questions: [
+          {
+            id: 'q-002-5', case_id: 'seed-002',
+            question_text: 'Based on the NTEP guidelines, what is the next step in her TB therapy now that she has completed 2 months of HRZE with a negative sputum?',
+            option_a: 'Continue HRZE for 4 more months.',
+            option_b: 'Transition to the Continuation Phase with HRE (Isoniazid, Rifampicin, Ethambutol) for 4 months.',
+            option_c: 'Stop all medications as she is cured.',
+            option_d: 'Transition to Monotherapy with Isoniazid.',
+            correct_option: 'B',
+            pci_duty_category: 'treatment_chart_review',
+            question_type: 'mcq',
+            explanation_text: 'After the 2-month Intensive Phase (HRZE), patients transition to the 4-month Continuation Phase (HRE) to eliminate dormant bacilli.',
+            subject_reference: 'Pharmacotherapeutics - TB Treatment',
+          },
+          {
+            id: 'q-002-6', case_id: 'seed-002',
+            question_text: 'She developed joint pain and elevated uric acid. Which drug from her intensive phase likely caused this?',
+            option_a: 'Isoniazid',
+            option_b: 'Rifampicin',
+            option_c: 'Pyrazinamide',
+            option_d: 'Ethambutol',
+            correct_option: 'C',
+            pci_duty_category: 'adr_detection',
+            question_type: 'mcq',
+            explanation_text: 'Pyrazinamide inhibits renal excretion of uric acid, causing hyperuricemia and occasionally precipitating acute gout attacks.',
+            subject_reference: 'Pharmacotherapeutics - ADRs',
+          }
+        ]
+      }
+    ],
+    study_guide: {
+      guidelines: [
+        {
+          title: 'NTEP Tuberculosis Treatment Guidelines (2024)',
+          organization: 'NTEP',
+          text: 'First-line TB therapy comprises 2 months of HRZE (Intensive Phase) followed by 4 months of HRE (Continuation Phase). Fixed Dose Combinations (FDCs) based on patient weight bands should be used. Sputum analysis is repeated at completion of the intensive phase.'
+        }
+      ],
+      calculations: [],
+      reasoning: [
+        {
+          question_text: 'Why does Rifampicin affect Levothyroxine levels?',
+          rationale: 'Rifampicin is a highly potent inducer of hepatic cytochrome P450 enzymes and UDP-glucuronosyltransferases, accelerating the clearance of Levothyroxine.'
+        }
+      ],
+      mnemonics: [
+        {
+          name: 'First-Line ATT Adverse Profiles (R-I-P-E)',
+          concept: 'Remembering first-line tuberculosis drugs and their toxicities',
+          bullets: [
+            'R — Rifampicin: Red/orange discoloration of body fluids, RNA polymerase inhibitor.',
+            'I — Isoniazid: Injury to nerves (peripheral neuropathy - prevent with Pyridoxine/B6).',
+            'P — Pyrazinamide: Pain in joints (hyperuricemia/gout), Portal hepatotoxicity.',
+            'E — Ethambutol: Eye damage (retrobulbar optic neuritis).'
+          ]
+        }
+      ]
+    }
+  },
+
+  // CASE 3: CLINICAL TOXICOLOGY
+  {
+    id: 'seed-003',
+    title: 'OPC Poisoning — Emergency Management',
+    subject_area: 'clinical_toxicology',
+    difficulty: 'hard',
+    tags: ['OPC', 'Atropine', 'Toxicology', 'Acetylcholinesterase'],
+    source: 'seed',
+    created_at: '2025-01-03T00:00:00Z',
+    phases: [
+      {
+        id: 'seed-003-phase-1',
+        title: 'Hour 1: ER Resuscitation',
+        description: 'Venkatesh arrives in cholinergic crisis. Review the atropinization protocol and airway management.',
+        patient_snapshot: {
+          name: 'Venkatesh R', age: 35, sex: 'M', ward: 'Emergency', bed: 'ER-02',
+          presenting_complaint: 'OPC poisoning — cholinergic crisis (sweating, salivation, bradycardia).',
+          pmh: [],
+          medications: [
+            { drug: 'Atropine IV', dose: '2 mg', frequency: 'Q5min', route: 'IV' },
+            { drug: 'Pralidoxime (2-PAM)', dose: '1 g', frequency: 'Loading', route: 'IV' },
+          ],
+          allergies: [],
+          labs: [
+            { name: 'Serum Cholinesterase', value: '450', unit: 'U/L', reference: '5320-12920', is_abnormal: true },
+            { name: 'HR', value: '48', unit: 'bpm', reference: '60-100', is_abnormal: true },
+          ],
+        },
+        questions: [
+          {
+            id: 'q-003-1', case_id: 'seed-003',
+            question_text: 'What are the clinical signs of adequate atropinization?',
+            option_a: 'Miosis and bradycardia',
+            option_b: 'Clear lungs, HR 80-100 bpm, dry axillae, pupil dilation',
+            option_c: 'Hypertension and tachycardia above 120',
+            option_d: 'Cessation of all muscle fasciculations',
+            correct_option: 'B',
+            pci_duty_category: 'drug_therapy_monitoring',
+            question_type: 'mcq',
+            explanation_text: 'Endpoints of atropinization: dry secretions, HR 80-100, dry skin. Atropine does not reverse nicotinic symptoms like fasciculations.',
+            subject_reference: 'Pharmacotherapeutics - Clinical Toxicology',
+          },
+          {
+            id: 'q-003-2', case_id: 'seed-003',
+            question_text: 'Which neuromuscular blocker is absolutely contraindicated if intubation is required?',
+            option_a: 'Rocuronium',
+            option_b: 'Vecuronium',
+            option_c: 'Succinylcholine',
+            option_d: 'Atracurium',
+            correct_option: 'C',
+            pci_duty_category: 'treatment_chart_review',
+            question_type: 'mcq',
+            explanation_text: 'Succinylcholine is metabolized by pseudocholinesterase, which is inhibited by OPCs. Use causes dangerously prolonged apnea.',
+            subject_reference: 'Pharmacotherapeutics - Clinical Toxicology',
+          }
+        ]
+      },
+      {
+        id: 'seed-003-phase-2',
+        title: 'Hour 6: Antidote Timing',
+        description: 'Patient stabilized, but you are reviewing the Pralidoxime protocol and antiemetic choices.',
+        patient_snapshot: {
+          name: 'Venkatesh R', age: 35, sex: 'M', ward: 'ICU', bed: 'ICU-1',
+          presenting_complaint: 'Nausea and persistent muscle weakness.',
+          pmh: [],
+          medications: [
+            { drug: 'Pralidoxime (2-PAM)', dose: '500 mg/hr', frequency: 'Continuous', route: 'IV' },
+            { drug: 'Ondansetron', dose: '4 mg', frequency: 'PRN', route: 'IV' }
+          ],
+          allergies: [],
+          labs: [],
+        },
+        questions: [
+          {
+            id: 'q-003-3', case_id: 'seed-003',
+            question_text: 'Why must Pralidoxime be given within 24-48 hours?',
+            option_a: 'It directly binds acetylcholine.',
+            option_b: 'After aging, the OP-AChE bond becomes irreversible.',
+            option_c: 'It loses potency in solution.',
+            option_d: 'It is renally cleared too quickly.',
+            correct_option: 'B',
+            pci_duty_category: 'drug_poison_info',
+            question_type: 'mcq',
+            explanation_text: 'Aging makes the bond irreversible; 2-PAM cannot reactivate aged AChE.',
+            subject_reference: 'Pharmacotherapeutics - Clinical Toxicology',
+          },
+          {
+            id: 'q-003-4', case_id: 'seed-003',
+            question_text: 'Why is Ondansetron preferred over Metoclopramide for his nausea?',
+            option_a: 'Metoclopramide causes QT prolongation.',
+            option_b: 'Metoclopramide has cholinergic/prokinetic properties that worsen OPC crisis.',
+            option_c: 'Ondansetron acts faster.',
+            option_d: 'Metoclopramide binds to Atropine.',
+            correct_option: 'B',
+            pci_duty_category: 'drug_interaction',
+            question_type: 'mcq',
+            explanation_text: 'Metoclopramide stimulates gut motility via cholinergic mechanisms, exacerbating the cholinergic toxidrome.',
+            subject_reference: 'Pharmacotherapeutics - Clinical Toxicology',
+          }
+        ]
+      },
+      {
+        id: 'seed-003-phase-3',
+        title: 'Day 3: Complications',
+        description: 'Venkatesh develops sudden neck flexion weakness and respiratory distress despite initial recovery.',
+        patient_snapshot: {
+          name: 'Venkatesh R', age: 35, sex: 'M', ward: 'ICU', bed: 'ICU-1',
+          presenting_complaint: 'Respiratory distress on Day 3.',
+          pmh: [],
+          medications: [
+            { drug: 'Atropine IV', dose: '0.5 mg/hr', frequency: 'Continuous', route: 'IV' }
+          ],
+          allergies: [],
+          labs: [],
+        },
+        questions: [
+          {
+            id: 'q-003-5', case_id: 'seed-003',
+            question_text: 'What is the likely cause of respiratory failure 24-96 hours after OPC poisoning?',
+            option_a: 'Intermediate Syndrome',
+            option_b: 'Rebound Atropine toxicity',
+            option_c: 'Organophosphate-induced delayed polyneuropathy (OPIDN)',
+            option_d: 'Pralidoxime toxicity',
+            correct_option: 'A',
+            pci_duty_category: 'adr_detection',
+            question_type: 'mcq',
+            explanation_text: 'Intermediate syndrome occurs 1-4 days post-exposure due to prolonged nicotinic receptor overstimulation, causing respiratory muscle paralysis requiring mechanical ventilation.',
+            subject_reference: 'Pharmacotherapeutics - Clinical Toxicology',
+          },
+          {
+            id: 'q-003-6', case_id: 'seed-003',
+            question_text: 'How should Atropine be discontinued to prevent rebound toxicity?',
+            option_a: 'Stop abruptly once lungs are clear.',
+            option_b: 'Taper slowly over days; abrupt cessation causes rebound cholinergic crisis.',
+            option_c: 'Switch to oral Atropine.',
+            option_d: 'Replace with Glycopyrrolate.',
+            correct_option: 'B',
+            pci_duty_category: 'treatment_chart_review',
+            question_type: 'mcq',
+            explanation_text: 'Due to depot release of highly lipophilic OPCs from fat stores, Atropine must be tapered slowly to prevent fatal rebound toxicity.',
+            subject_reference: 'Pharmacotherapeutics - Clinical Toxicology',
+          }
+        ]
+      }
+    ],
+    study_guide: {
+      guidelines: [
+        {
+          title: 'WHO Guidelines for the Management of Organophosphate Poisoning',
+          organization: 'WHO',
+          text: 'Atropine is the cornerstone antidote — give 1.8-3 mg IV bolus, double the dose every 5 minutes until full atropinisation. Pralidoxime (PAM) 1-2 g IV over 15-30 minutes most effective within the first 24 hours.'
+        }
+      ],
+      calculations: [],
+      reasoning: [
+        {
+          question_text: 'What is the molecular mechanism of Organophosphate toxicity?',
+          rationale: 'Organophosphates covalently phosphorylate the active serine residue of Acetylcholinesterase, irreversibly blocking it and causing massive Acetylcholine accumulation.'
+        }
+      ],
+      mnemonics: [
+        {
+          name: 'Cholinergic Toxidrome (DUMBBELS)',
+          concept: 'Symptoms of muscarinic overstimulation',
+          bullets: [
+            'D — Diarrhea',
+            'U — Urination',
+            'M — Miosis',
+            'B — Bradycardia',
+            'B — Bronchospasm + Bronchorrhoea',
+            'E — Emesis',
+            'L — Lacrimation',
+            'S — Salivation + Sweating'
+          ]
+        }
+      ]
+    }
+  },
+
+  // CASE 4: CARDIOVASCULAR
+  {
+    id: 'seed-004',
+    title: 'Acute Heart Failure & Digoxin Toxicity',
+    subject_area: 'cardiovascular',
+    difficulty: 'hard',
+    tags: ['Heart Failure', 'Digoxin Toxicity', 'Hypokalemia', 'TDM'],
+    source: 'seed',
+    created_at: '2025-01-04T00:00:00Z',
+    phases: [
+      {
+        id: 'seed-004-phase-1',
+        title: 'Day 1: CCU Admission',
+        description: 'Suresh is admitted with acute decompensated HF, nausea, and visual halos. Review his medication chart and IV fluids.',
+        patient_snapshot: {
+          name: 'Suresh Menon', age: 72, sex: 'M', ward: 'CCU', bed: 'CCU-06',
+          presenting_complaint: 'ADHF with yellow-green halos and nausea.',
+          pmh: ['HFrEF (EF 30%)', 'AF', 'CKD 3b'],
+          medications: [
+            { drug: 'Digoxin', dose: '0.25 mg', frequency: 'OD', route: 'Oral' },
+            { drug: 'Furosemide', dose: '40 mg', frequency: 'BD', route: 'IV' },
+            { drug: 'IV Dextrose 5% + KCl 20 mEq', dose: '500 mL', frequency: 'Over 4 hours', route: 'IV' },
+          ],
+          allergies: [],
+          labs: [
+            { name: 'Digoxin Level', value: '3.2', unit: 'ng/mL', reference: '0.5-2.0', is_abnormal: true },
+            { name: 'K+', value: '3.0', unit: 'mEq/L', reference: '3.5-5.0', is_abnormal: true },
+          ],
+        },
+        questions: [
+          {
+            id: 'q-004-1', case_id: 'seed-004',
+            question_text: 'What is the pharmacist\'s assessment of the Digoxin level and K+?',
+            option_a: 'Therapeutic; continue dose.',
+            option_b: 'Digoxin toxicity exacerbated by hypokalemia; hold Digoxin, correct K+.',
+            option_c: 'Increase Digoxin for AF control.',
+            option_d: 'Add Amiodarone.',
+            correct_option: 'B',
+            pci_duty_category: 'drug_therapy_monitoring',
+            question_type: 'mcq',
+            explanation_text: 'Digoxin >2.0 ng/mL is toxic. Hypokalemia increases digoxin binding to the Na/K ATPase, amplifying toxicity.',
+            subject_reference: 'Pharmacotherapeutics - Cardiology',
+          },
+          {
+            id: 'q-004-2', case_id: 'seed-004',
+            question_text: 'Is D5W + KCl appropriate in ADHF?',
+            option_a: 'Yes, D5W is standard.',
+            option_b: 'No, D5W provides free water worsening fluid overload; use concentrated KCl in minimal volume.',
+            option_c: 'Switch to RL at 200 mL/h.',
+            option_d: 'Give KCl as rapid IV push.',
+            correct_option: 'B',
+            pci_duty_category: 'treatment_chart_review',
+            question_type: 'mar_action',
+            target_drug: 'IV Dextrose 5% + KCl 20 mEq',
+            explanation_text: 'Free water worsens ADHF. KCl must be concentrated and infused slowly (max 10-20 mEq/hr peripherally).',
+            subject_reference: 'Pharmacotherapeutics - Electrolyte Safety',
+          }
+        ]
+      },
+      {
+        id: 'seed-004-phase-2',
+        title: 'Day 2: Arrhythmia Development',
+        description: 'Suresh develops frequent PVCs and a run of Ventricular Tachycardia.',
+        patient_snapshot: {
+          name: 'Suresh Menon', age: 72, sex: 'M', ward: 'CCU', bed: 'CCU-06',
+          presenting_complaint: 'Ventricular Tachycardia.',
+          pmh: ['HFrEF (EF 30%)'],
+          medications: [
+            { drug: 'Furosemide', dose: '40 mg', frequency: 'BD', route: 'IV' }
+          ],
+          allergies: [],
+          labs: [
+            { name: 'Digoxin Level', value: '3.0', unit: 'ng/mL', reference: '0.5-2.0', is_abnormal: true },
+            { name: 'K+', value: '3.8', unit: 'mEq/L', reference: '3.5-5.0', is_abnormal: false },
+          ],
+        },
+        questions: [
+          {
+            id: 'q-004-3', case_id: 'seed-004',
+            question_text: 'What is the definitive treatment for life-threatening arrhythmias in Digoxin toxicity?',
+            option_a: 'Amiodarone IV',
+            option_b: 'Digoxin Immune Fab (Digibind)',
+            option_c: 'Lidocaine IV',
+            option_d: 'Dialysis',
+            correct_option: 'B',
+            pci_duty_category: 'drug_poison_info',
+            question_type: 'mcq',
+            explanation_text: 'Digoxin Immune Fab rapidly binds and neutralizes digoxin, reversing life-threatening arrhythmias.',
+            subject_reference: 'Toxicology',
+          },
+          {
+            id: 'q-004-4', case_id: 'seed-004',
+            question_text: 'Which IV fluid/electrolyte is absolutely CONTRAINDICATED in Digoxin toxicity?',
+            option_a: 'Normal Saline',
+            option_b: 'Magnesium Sulfate',
+            option_c: 'Calcium Gluconate',
+            option_d: 'Potassium Chloride',
+            correct_option: 'C',
+            pci_duty_category: 'treatment_chart_review',
+            question_type: 'mcq',
+            explanation_text: 'Calcium administration synergizes with digoxin-induced intracellular calcium overload, precipitating irreversible "stone heart" (tetanic cardiac arrest).',
+            subject_reference: 'Toxicology',
+          }
+        ]
+      },
+      {
+        id: 'seed-004-phase-3',
+        title: 'Day 5: Discharge Optimization',
+        description: 'Toxicity resolved. Preparing discharge medications for his HFrEF.',
+        patient_snapshot: {
+          name: 'Suresh Menon', age: 72, sex: 'M', ward: 'CCU', bed: 'CCU-06',
+          presenting_complaint: 'Ready for discharge.',
+          pmh: ['HFrEF (EF 30%)', 'CKD 3b'],
+          medications: [
+            { drug: 'Enalapril', dose: '5 mg', frequency: 'BD', route: 'Oral' },
+            { drug: 'Metoprolol Succinate', dose: '25 mg', frequency: 'OD', route: 'Oral' },
+            { drug: 'Spironolactone', dose: '25 mg', frequency: 'OD', route: 'Oral' },
+          ],
+          allergies: [],
+          labs: [
+            { name: 'eGFR', value: '35', unit: 'mL/min', reference: '>60', is_abnormal: true },
+          ],
+        },
+        questions: [
+          {
+            id: 'q-004-5', case_id: 'seed-004',
+            question_text: 'What dose adjustment is required if Digoxin is restarted, given his eGFR of 35?',
+            option_a: 'Restart at 0.25 mg OD.',
+            option_b: 'Reduce to 0.125 mg OD or every other day (70% renally cleared).',
+            option_c: 'Double the dose.',
+            option_d: 'Digoxin is safe without adjustment.',
+            correct_option: 'B',
+            pci_duty_category: 'treatment_chart_review',
+            question_type: 'mcq',
+            explanation_text: 'Digoxin is cleared by the kidneys. CKD requires drastic dose reduction to prevent re-toxicity.',
+            subject_reference: 'Pharmacotherapeutics - Renal Dosing',
+          },
+          {
+            id: 'q-004-6', case_id: 'seed-004',
+            question_text: 'Which pillar of Guideline-Directed Medical Therapy (GDMT) is missing from his regimen?',
+            option_a: 'SGLT2 Inhibitor (e.g., Dapagliflozin)',
+            option_b: 'Calcium Channel Blocker',
+            option_c: 'Alpha Blocker',
+            option_d: 'Nitrate',
+            correct_option: 'A',
+            pci_duty_category: 'evaluate',
+            question_type: 'mcq',
+            explanation_text: 'The 4 pillars of HFrEF are: ARNI/ACEi, Beta-Blocker, MRA (Spironolactone), and SGLT2i. He is missing an SGLT2i.',
+            subject_reference: 'Pharmacotherapeutics - Cardiology',
+          }
+        ]
+      }
+    ],
+    study_guide: {
+      guidelines: [
+        {
+          title: 'AHA/ACC Heart Failure Guidelines (2022)',
+          organization: 'AHA/ACC',
+          text: 'Digoxin is NOT first-line and does not reduce mortality. Target serum digoxin level for HF is 0.5-0.9 ng/mL.'
+        }
+      ],
+      calculations: [
+        {
+          name: 'Digibind Dose Calculation',
+          formula: 'Number of vials = [Serum Digoxin Level (ng/mL) × Weight (kg)] / 100',
+          explanation: 'Calculates the exact amount of antibody fragments needed to neutralize free digoxin.'
+        }
+      ],
+      reasoning: [
+        {
+          question_text: 'Why does Hypokalemia potentiate Digoxin toxicity?',
+          rationale: 'Potassium and digoxin compete for the SAME binding site on the Na+/K+ ATPase pump. Low K+ equals more digoxin binding and toxicity.'
+        }
+      ],
+      mnemonics: [
+        {
+          name: 'Digoxin Toxicity Signs (V-I-S-U-A-L)',
+          concept: 'Clinical symptoms of digoxin toxicity',
+          bullets: [
+            'V — Visual changes (yellow-green halos)',
+            'I — Irregular heartbeats',
+            'S — Stomach upset (nausea/vomiting)',
+            'U — Urinary output drop',
+            'A — Abdominal pain',
+            'L — Lethargy'
+          ]
+        }
+      ]
+    }
+  },
+
+  // CASE 5: PHARMACOKINETICS / TDM
+  {
+    id: 'seed-005',
+    title: 'Infective Endocarditis & Gentamicin TDM',
+    subject_area: 'pharmacokinetics_tdm',
+    difficulty: 'hard',
+    tags: ['Endocarditis', 'Gentamicin', 'TDM', 'Nephrotoxicity'],
+    source: 'seed',
+    created_at: '2025-01-05T00:00:00Z',
+    phases: [
+      {
+        id: 'seed-005-phase-1',
+        title: 'Day 5: TDM Review',
+        description: 'Simran\'s Gentamicin trough has come back elevated. Review the TDM results and recommend dosing adjustments.',
+        patient_snapshot: {
+          name: 'Simran Jeet', age: 28, sex: 'F', ward: 'Cardiac Ward', bed: '24',
+          presenting_complaint: 'Endocarditis on Ampicillin + Gentamicin.',
+          pmh: ['IVDA', 'MVP'],
+          medications: [
+            { drug: 'Ampicillin IV', dose: '2 g', frequency: 'Q4H', route: 'IV' },
+            { drug: 'Gentamicin IV', dose: '80 mg', frequency: 'Q8H', route: 'IV' },
+          ],
+          allergies: [],
+          labs: [
+            { name: 'Gentamicin Trough', value: '3.8', unit: 'mcg/mL', reference: '<1.0', is_abnormal: true },
+            { name: 'SCr', value: '1.0', unit: 'mg/dL', reference: '0.7-1.3', is_abnormal: false },
+          ],
+        },
+        questions: [
+          {
+            id: 'q-005-1', case_id: 'seed-005',
+            question_text: 'Gentamicin trough is 3.8 mcg/mL (target <1). What intervention is required?',
+            option_a: 'Continue current dosing.',
+            option_b: 'Extend the interval to Q12H or Q24H and recheck trough.',
+            option_c: 'Increase dose to 120 mg.',
+            option_d: 'Switch to oral Gentamicin.',
+            correct_option: 'B',
+            pci_duty_category: 'drug_therapy_monitoring',
+            question_type: 'mar_action',
+            target_drug: 'Gentamicin IV',
+            explanation_text: 'Trough >1 mcg/mL indicates accumulation and high risk for nephrotoxicity. Extending the interval allows time for clearance.',
+            subject_reference: 'Pharmacokinetics / TDM',
+          },
+          {
+            id: 'q-005-2', case_id: 'seed-005',
+            question_text: 'When exactly should a Gentamicin trough level be drawn?',
+            option_a: 'After the infusion ends.',
+            option_b: '30 minutes before the next scheduled dose.',
+            option_c: '1 hour after infusion starts.',
+            option_d: 'Randomly during the day.',
+            correct_option: 'B',
+            pci_duty_category: 'drug_therapy_monitoring',
+            question_type: 'mcq',
+            explanation_text: 'Trough reflects the lowest concentration and is drawn 30 mins prior to the next dose to ensure complete clearance.',
+            subject_reference: 'Pharmacokinetics / TDM',
+          }
+        ]
+      },
+      {
+        id: 'seed-005-phase-2',
+        title: 'Day 10: Toxicity Monitoring',
+        description: 'Checking for organ damage from prolonged aminoglycoside use.',
+        patient_snapshot: {
+          name: 'Simran Jeet', age: 28, sex: 'F', ward: 'Cardiac Ward', bed: '24',
+          presenting_complaint: 'Complains of tinnitus (ringing in ears).',
+          pmh: ['IVDA'],
+          medications: [
+            { drug: 'Gentamicin IV', dose: '80 mg', frequency: 'Q12H', route: 'IV' }
+          ],
+          allergies: [],
+          labs: [
+            { name: 'SCr', value: '1.5', unit: 'mg/dL', reference: '0.7-1.3', is_abnormal: true },
+          ],
+        },
+        questions: [
+          {
+            id: 'q-005-3', case_id: 'seed-005',
+            question_text: 'Her SCr has risen to 1.5 and she has tinnitus. What are these signs of?',
+            option_a: 'Aminoglycoside-induced Nephrotoxicity and Ototoxicity.',
+            option_b: 'Ampicillin allergy.',
+            option_c: 'Normal disease progression.',
+            option_d: 'Heart failure.',
+            correct_option: 'A',
+            pci_duty_category: 'adr_detection',
+            question_type: 'mcq',
+            explanation_text: 'Aminoglycosides cause reversible acute tubular necrosis (rising SCr) and irreversible ototoxicity (tinnitus, hearing loss).',
+            subject_reference: 'Pharmacotherapeutics - ADRs',
+          },
+          {
+            id: 'q-005-4', case_id: 'seed-005',
+            question_text: 'Which alternative synergistic antibiotic regimen avoids aminoglycoside toxicity in Enterococcal endocarditis?',
+            option_a: 'Vancomycin + Daptomycin',
+            option_b: 'Ampicillin + Ceftriaxone',
+            option_c: 'Linezolid alone',
+            option_d: 'Azithromycin + Ciprofloxacin',
+            correct_option: 'B',
+            pci_duty_category: 'evaluate',
+            question_type: 'mcq',
+            explanation_text: 'Ampicillin + Ceftriaxone provides double beta-lactam synergy against E. faecalis without nephrotoxicity, preferred in patients with rising SCr.',
+            subject_reference: 'Infectious Diseases',
+          }
+        ]
+      },
+      {
+        id: 'seed-005-phase-3',
+        title: 'Day 28: Discharge Planning',
+        description: 'Endocarditis treatment is completing. Validating duration.',
+        patient_snapshot: {
+          name: 'Simran Jeet', age: 28, sex: 'F', ward: 'Cardiac Ward', bed: '24',
+          presenting_complaint: 'Ready to finish antibiotics.',
+          pmh: [],
+          medications: [
+            { drug: 'Ampicillin IV', dose: '2 g', frequency: 'Q4H', route: 'IV' },
+            { drug: 'Ceftriaxone IV', dose: '2 g', frequency: 'Q12H', route: 'IV' }
+          ],
+          allergies: [],
+          labs: [],
+        },
+        questions: [
+          {
+            id: 'q-005-5', case_id: 'seed-005',
+            question_text: 'What is the standard total duration of IV antibiotic therapy for native valve Enterococcal endocarditis?',
+            option_a: '7-14 days',
+            option_b: '4 to 6 weeks',
+            option_c: '3 months',
+            option_d: '6 months oral',
+            correct_option: 'B',
+            pci_duty_category: 'treatment_chart_review',
+            question_type: 'mcq',
+            explanation_text: 'Endocarditis requires prolonged high-dose IV bactericidal therapy (4-6 weeks) to penetrate valve vegetations.',
+            subject_reference: 'Infectious Diseases',
+          },
+          {
+            id: 'q-005-6', case_id: 'seed-005',
+            question_text: 'Unlike nephrotoxicity, what characterizes Gentamicin-induced ototoxicity?',
+            option_a: 'It is highly reversible.',
+            option_b: 'It is permanent and irreversible due to hair cell destruction.',
+            option_c: 'It only affects balance, not hearing.',
+            option_d: 'It resolves with hydration.',
+            correct_option: 'B',
+            pci_duty_category: 'patient_counselling',
+            question_type: 'mcq',
+            explanation_text: 'Cochlear damage from aminoglycosides is permanent, making audiometry monitoring vital for long courses.',
+            subject_reference: 'Pharmacotherapeutics - ADRs',
+          }
+        ]
+      }
+    ],
+    study_guide: {
+      guidelines: [
+        {
+          title: 'AHA Guidelines for Infective Endocarditis (2015)',
+          organization: 'AHA',
+          text: 'Treatment of Enterococcal IE requires Ampicillin + Gentamicin OR Ampicillin + Ceftriaxone (preferred if renal risk) for 4-6 weeks.'
+        }
+      ],
+      calculations: [],
+      reasoning: [
+        {
+          question_text: 'Why is Ampicillin + Ceftriaxone synergistic?',
+          rationale: 'Ampicillin binds PBP4 and PBP5, while Ceftriaxone binds PBP2 and PBP3 — together they overwhelm the organism\'s ability to repair its cell wall.'
+        }
+      ],
+      mnemonics: [
+        {
+          name: 'Aminoglycoside Toxicity (O-T-O)',
+          concept: 'Primary toxicities of aminoglycosides',
+          bullets: [
+            'O — Ototoxicity (irreversible)',
+            'T — Tubular Necrosis (reversible nephrotoxicity)',
+            'O — Ocular/Neuromuscular Blockade'
+          ]
+        }
+      ]
+    }
+  },
+
+  // CASE 6: RESPIRATORY / TOXICOLOGY
+  {
+    id: 'seed-006',
+    title: 'COPD Exacerbation & Theophylline Toxicity',
+    subject_area: 'respiratory',
+    difficulty: 'medium',
+    tags: ['COPD', 'Theophylline', 'Oxygen Therapy', 'Drug Interaction'],
+    source: 'seed',
+    created_at: '2025-01-06T00:00:00Z',
+    phases: [
+      {
+        id: 'seed-006-phase-1',
+        title: 'Day 1: Acute Exacerbation',
+        description: 'Harish is admitted with an acute exacerbation. Review oxygen targets and anticholinergic safety in BPH.',
+        patient_snapshot: {
+          name: 'Harish Chandra', age: 65, sex: 'M', ward: 'Pulmonology', bed: '18',
+          presenting_complaint: 'Acute COPD exacerbation with CO2 retention.',
+          pmh: ['COPD GOLD III', 'BPH'],
+          medications: [
+            { drug: 'Salbutamol Neb', dose: '2.5 mg', frequency: 'Q4H', route: 'Neb' },
+            { drug: 'Ipratropium Neb', dose: '500 mcg', frequency: 'Q6H', route: 'Neb' },
+            { drug: 'Oxygen', dose: '4 L/min', frequency: 'Continuous', route: 'NC' },
+          ],
+          allergies: [],
+          labs: [
+            { name: 'SpO2', value: '86%', unit: '', reference: '>88%', is_abnormal: true },
+            { name: 'pCO2', value: '58', unit: 'mmHg', reference: '35-45', is_abnormal: true },
+          ],
+        },
+        questions: [
+          {
+            id: 'q-006-1', case_id: 'seed-006',
+            question_text: 'What is the target SpO2 in COPD and why is high-flow dangerous?',
+            option_a: '99-100%',
+            option_b: '88-92% — high-flow O2 suppresses the hypoxic drive, worsening CO2 retention.',
+            option_c: '75-80%',
+            option_d: 'No oxygen in COPD',
+            correct_option: 'B',
+            pci_duty_category: 'treatment_chart_review',
+            question_type: 'mcq',
+            explanation_text: 'In chronic CO2 retainers, giving high O2 removes the hypoxic drive, causing hypoventilation and fatal respiratory acidosis.',
+            subject_reference: 'Pharmacotherapeutics - Respiratory',
+          },
+          {
+            id: 'q-006-2', case_id: 'seed-006',
+            question_text: 'Which inhaled medication needs BPH monitoring?',
+            option_a: 'Salbutamol',
+            option_b: 'Ipratropium — anticholinergics worsen urinary retention.',
+            option_c: 'Oxygen',
+            option_d: 'Steroids',
+            correct_option: 'B',
+            pci_duty_category: 'adr_detection',
+            question_type: 'mcq',
+            explanation_text: 'Anticholinergics relax bladder detrusor, worsening BPH retention.',
+            subject_reference: 'Pharmacotherapeutics - Respiratory',
+          }
+        ]
+      },
+      {
+        id: 'seed-006-phase-2',
+        title: 'Day 3: Drug Interaction',
+        description: 'Patient started on Theophylline and Ciprofloxacin for pneumonia. Develops tremors and tachycardia.',
+        patient_snapshot: {
+          name: 'Harish Chandra', age: 65, sex: 'M', ward: 'Pulmonology', bed: '18',
+          presenting_complaint: 'Tremors and tachycardia.',
+          pmh: ['COPD'],
+          medications: [
+            { drug: 'Theophylline', dose: '300 mg', frequency: 'BD', route: 'Oral' },
+            { drug: 'Ciprofloxacin', dose: '500 mg', frequency: 'BD', route: 'Oral' }
+          ],
+          allergies: [],
+          labs: [
+            { name: 'Theophylline Level', value: '28', unit: 'mcg/mL', reference: '10-20', is_abnormal: true }
+          ],
+        },
+        questions: [
+          {
+            id: 'q-006-3', case_id: 'seed-006',
+            question_text: 'Why is the Theophylline level toxic (28 mcg/mL)?',
+            option_a: 'Ciprofloxacin is a potent CYP1A2 inhibitor, halting Theophylline metabolism.',
+            option_b: 'Renal failure.',
+            option_c: 'Theophylline is taken with food.',
+            option_d: 'Salbutamol interaction.',
+            correct_option: 'A',
+            pci_duty_category: 'drug_interaction',
+            question_type: 'mcq',
+            explanation_text: 'Ciprofloxacin inhibits CYP1A2, which doubles Theophylline levels, leading to toxic tremors and arrhythmias.',
+            subject_reference: 'Pharmacotherapeutics - Drug Interactions',
+          },
+          {
+            id: 'q-006-4', case_id: 'seed-006',
+            question_text: 'Which safer antibiotic covers respiratory pathogens without inhibiting CYP1A2?',
+            option_a: 'Fluvoxamine',
+            option_b: 'Azithromycin',
+            option_c: 'Erythromycin',
+            option_d: 'Clarithromycin',
+            correct_option: 'B',
+            pci_duty_category: 'treatment_chart_review',
+            question_type: 'mcq',
+            explanation_text: 'Azithromycin does not inhibit CYP1A2 (unlike Erythromycin/Clarithromycin) and is safe with Theophylline.',
+            subject_reference: 'Infectious Diseases',
+          }
+        ]
+      },
+      {
+        id: 'seed-006-phase-3',
+        title: 'Day 5: Discharge & Counseling',
+        description: 'Discharge planning. Patient mentions he quit smoking 2 weeks ago.',
+        patient_snapshot: {
+          name: 'Harish Chandra', age: 65, sex: 'M', ward: 'Pulmonology', bed: '18',
+          presenting_complaint: 'Ready for discharge.',
+          pmh: ['COPD'],
+          medications: [
+            { drug: 'Theophylline', dose: '300 mg', frequency: 'BD', route: 'Oral' }
+          ],
+          allergies: [],
+          labs: [],
+        },
+        questions: [
+          {
+            id: 'q-006-5', case_id: 'seed-006',
+            question_text: 'How does smoking cessation impact his Theophylline dose?',
+            option_a: 'No impact.',
+            option_b: 'Smoking induces CYP1A2; quitting removes this induction, so his Theophylline dose must be REDUCED to prevent toxicity.',
+            option_c: 'Dose must be increased.',
+            option_d: 'Stop the drug entirely.',
+            correct_option: 'B',
+            pci_duty_category: 'patient_counselling',
+            question_type: 'mcq',
+            explanation_text: 'Polycyclic aromatic hydrocarbons in smoke induce CYP1A2. Quitting smoking slows metabolism, causing levels to rise if the dose isn\'t lowered.',
+            subject_reference: 'Pharmacokinetics',
+          },
+          {
+            id: 'q-006-6', case_id: 'seed-006',
+            question_text: 'What preventative vaccines should be verified prior to discharge for a COPD patient?',
+            option_a: 'Yellow fever',
+            option_b: 'Pneumococcal and Annual Influenza vaccines',
+            option_c: 'Rabies',
+            option_d: 'Typhoid',
+            correct_option: 'B',
+            pci_duty_category: 'patient_counselling',
+            question_type: 'mcq',
+            explanation_text: 'Pneumococcal and flu vaccines are critical to prevent viral/bacterial COPD exacerbations.',
+            subject_reference: 'Preventative Medicine',
+          }
+        ]
+      }
+    ],
+    study_guide: {
+      guidelines: [
+        {
+          title: 'GOLD Strategy for COPD (2024)',
+          organization: 'GOLD',
+          text: 'Target SpO2 88-92%. Short courses of steroids (5-7 days) without taper. Antibiotics indicated for increased sputum purulence/volume.'
+        }
+      ],
+      calculations: [],
+      reasoning: [
+        {
+          question_text: 'Why are methylxanthines prone to drug interactions?',
+          rationale: 'Narrow therapeutic index and primary CYP1A2 metabolism make them highly susceptible to toxicity via inhibitors (Cipro) or sub-therapeutic levels via inducers (Smoking).'
+        }
+      ],
+      mnemonics: [
+        {
+          name: 'CYP1A2 Inhibitors (C-A-M-P-S)',
+          concept: 'Drugs that inhibit CYP1A2 causing Theophylline toxicity',
+          bullets: [
+            'C — Ciprofloxacin',
+            'A — Amiodarone',
+            'M — Macrolides (Erythromycin)',
+            'P — Propranolol',
+            'S — SSRIs (Fluvoxamine)'
+          ]
+        }
+      ]
+    }
+  },
+// CASE 7: CLINICAL TOXICOLOGY
+  {
+    id: 'seed-007',
+    title: 'Paracetamol Overdose & NAC Protocol',
+    subject_area: 'clinical_toxicology',
+    difficulty: 'hard',
+    tags: ['Paracetamol', 'Toxicology', 'N-Acetylcysteine', 'Liver Failure'],
+    source: 'seed',
+    created_at: '2025-01-07T00:00:00Z',
+    phases: [
+      {
+        id: 'seed-007-phase-1',
+        title: 'Hour 6: ER NAC Protocol',
+        description: 'Deepa arrives 6 hours post-ingestion of 15g Paracetamol. Review the NAC protocol.',
+        patient_snapshot: {
+          name: 'Deepa Sharma', age: 22, sex: 'F', ward: 'Emergency', bed: 'ER-07',
+          presenting_complaint: '15g Paracetamol overdose 6 hours ago.',
+          pmh: [],
+          medications: [
+            { drug: 'NAC IV', dose: '150 mg/kg', frequency: 'Loading over 1h', route: 'IV' },
+          ],
+          allergies: [],
+          labs: [
+            { name: 'Serum Paracetamol (4h)', value: '250', unit: 'mcg/mL', reference: '<150 at 4h', is_abnormal: true },
+          ],
+        },
+        questions: [
+          {
+            id: 'q-007-1', case_id: 'seed-007',
+            question_text: 'What is the correct IV NAC 3-bag protocol for Paracetamol overdose?',
+            option_a: 'Single 150 mg/kg bolus.',
+            option_b: '150 mg/kg over 1h, 50 mg/kg over 4h, 100 mg/kg over 16h.',
+            option_c: '100 mg/kg IV push.',
+            option_d: '50 mg/kg oral Q4H.',
+            correct_option: 'B',
+            pci_duty_category: 'treatment_chart_review',
+            question_type: 'mcq',
+            explanation_text: 'Standard 3-bag IV NAC protocol over 21 hours is required to replenish glutathione stores.',
+            subject_reference: 'Pharmacotherapeutics - Clinical Toxicology',
+          },
+          {
+            id: 'q-007-2', case_id: 'seed-007',
+            question_text: 'How does NAC prevent liver damage?',
+            option_a: 'Neutralizes Paracetamol in stomach.',
+            option_b: 'Provides cysteine to replenish glutathione, conjugating toxic NAPQI.',
+            option_c: 'Inhibits CYP2E1.',
+            option_d: 'Enhances renal excretion.',
+            correct_option: 'B',
+            pci_duty_category: 'drug_poison_info',
+            question_type: 'mcq',
+            explanation_text: 'NAC replenishes glutathione, preventing the toxic metabolite NAPQI from destroying hepatocytes.',
+            subject_reference: 'Pharmacotherapeutics - Clinical Toxicology',
+          }
+        ]
+      },
+      {
+        id: 'seed-007-phase-2',
+        title: 'Hour 7: Adverse Reaction',
+        description: 'During the loading dose, she develops flushing and bronchospasm.',
+        patient_snapshot: {
+          name: 'Deepa Sharma', age: 22, sex: 'F', ward: 'Emergency', bed: 'ER-07',
+          presenting_complaint: 'Flushing and wheezing during NAC infusion.',
+          pmh: [],
+          medications: [
+            { drug: 'NAC IV', dose: '150 mg/kg', frequency: 'Loading', route: 'IV' }
+          ],
+          allergies: [],
+          labs: [],
+        },
+        questions: [
+          {
+            id: 'q-007-3', case_id: 'seed-007',
+            question_text: 'Flushing and bronchospasm during NAC loading — what is the immediate action?',
+            option_a: 'Stop NAC permanently.',
+            option_b: 'Pause, treat symptoms with antihistamines, resume at a slower rate.',
+            option_c: 'Switch to charcoal only.',
+            option_d: 'Give IM Epinephrine.',
+            correct_option: 'B',
+            pci_duty_category: 'adr_detection',
+            question_type: 'mcq',
+            explanation_text: 'This is a rate-dependent anaphylactoid reaction (non-IgE), not a true allergy. Resume slowly to save the liver.',
+            subject_reference: 'Pharmacotherapeutics - Clinical Toxicology',
+          },
+          {
+            id: 'q-007-4', case_id: 'seed-007',
+            question_text: 'If she had taken Modified-Release Paracetamol, how does it alter the Rumack-Matthew nomogram use?',
+            option_a: 'No change.',
+            option_b: 'The nomogram is invalid; check levels at 4h, 6h, and 8h to catch delayed peaks.',
+            option_c: 'Multiply the level by 2.',
+            option_d: 'Do not use NAC.',
+            correct_option: 'B',
+            pci_duty_category: 'evaluate',
+            question_type: 'mcq',
+            explanation_text: 'Extended-release preparations have delayed absorption, rendering the standard single-point 4h nomogram inaccurate.',
+            subject_reference: 'Pharmacotherapeutics - Toxicology',
+          }
+        ]
+      },
+      {
+        id: 'seed-007-phase-3',
+        title: 'Day 3: Liver Failure Criteria',
+        description: 'Her liver enzymes spike and she becomes encephalopathic.',
+        patient_snapshot: {
+          name: 'Deepa Sharma', age: 22, sex: 'F', ward: 'ICU', bed: 'ICU-3',
+          presenting_complaint: 'Encephalopathy and jaundice.',
+          pmh: [],
+          medications: [
+            { drug: 'NAC IV', dose: '100 mg/kg', frequency: 'Maintenance', route: 'IV' }
+          ],
+          allergies: [],
+          labs: [
+            { name: 'Arterial pH', value: '7.28', unit: '', reference: '7.35-7.45', is_abnormal: true },
+            { name: 'INR', value: '7.0', unit: '', reference: '<1.2', is_abnormal: true }
+          ],
+        },
+        questions: [
+          {
+            id: 'q-007-5', case_id: 'seed-007',
+            question_text: 'What criteria indicate the need for emergency liver transplantation in Paracetamol overdose?',
+            option_a: 'MELD Score > 10.',
+            option_b: 'King\'s College Criteria (pH < 7.30 OR INR > 6.5 + SCr > 3.4 + Grade 3/4 HE).',
+            option_c: 'ALT > 1000 U/L.',
+            option_d: 'Rumack-Matthew level > 300.',
+            correct_option: 'B',
+            pci_duty_category: 'evaluate',
+            question_type: 'mcq',
+            explanation_text: 'The King\'s College Criteria identify patients with irreversible acute liver failure requiring transplant.',
+            subject_reference: 'Hepatology',
+          },
+          {
+            id: 'q-007-6', case_id: 'seed-007',
+            question_text: 'Given her severe liver failure, should NAC be continued beyond the standard 21 hours?',
+            option_a: 'No, maximum duration is 21 hours.',
+            option_b: 'Yes, continue until INR < 2.0 or transplant occurs, as it improves hepatic microcirculation.',
+            option_c: 'Switch to oral NAC.',
+            option_d: 'Give Fresh Frozen Plasma instead.',
+            correct_option: 'B',
+            pci_duty_category: 'treatment_chart_review',
+            question_type: 'mcq',
+            explanation_text: 'In fulminant hepatic failure, IV NAC is continued indefinitely to support antioxidant defense and blood flow until recovery or transplant.',
+            subject_reference: 'Toxicology',
+          }
+        ]
+      }
+    ],
+    study_guide: {
+      guidelines: [
+        {
+          title: 'MHRA Clinical Guideline — IV NAC Protocol',
+          organization: 'MHRA',
+          text: 'Use D5W as the diluent — NOT Normal Saline (associated with increased anaphylactoid reactions).'
+        }
+      ],
+      calculations: [],
+      reasoning: [
+        {
+          question_text: 'What is the mechanism by which Paracetamol causes hepatotoxicity?',
+          rationale: 'In overdose, safe glucuronidation pathways saturate, shunting >50% through CYP2E1. NAPQI production exceeds glutathione capacity, causing hepatocyte necrosis.'
+        }
+      ],
+      mnemonics: [
+        {
+          name: 'King\'s College Criteria for Paracetamol (pH-I-C-E)',
+          concept: 'Criteria for liver transplant',
+          bullets: [
+            'pH < 7.30 (Strongest single indicator)',
+            'INR > 6.5',
+            'Creatinine > 3.4 mg/dL',
+            'Encephalopathy Grade III/IV'
+          ]
+        }
+      ]
+    }
+  },
+
+  // CASE 8: NEUROLOGY
+  {
+    id: 'seed-008',
+    title: 'Acute Stroke & Anticoagulant Reconciliation',
+    subject_area: 'neurology_psychiatry',
+    difficulty: 'hard',
+    tags: ['Stroke', 'tPA', 'Atrial Fibrillation', 'Anticoagulation'],
+    source: 'seed',
+    created_at: '2025-01-08T00:00:00Z',
+    phases: [
+      {
+        id: 'seed-008-phase-1',
+        title: 'Day 1: Acute Stroke',
+        description: 'Kamala is admitted with acute ischemic stroke. Review anticoagulation history and tPA safety.',
+        patient_snapshot: {
+          name: 'Kamala Prasad', age: 74, sex: 'F', ward: 'Stroke Unit', bed: 'SU-03',
+          presenting_complaint: 'Acute ischemic stroke with AF.',
+          pmh: ['AF', 'HTN', 'T2DM'],
+          medications: [
+            { drug: 'Alteplase', dose: '0.9 mg/kg', frequency: 'Once', route: 'IV' },
+            { drug: 'Warfarin', dose: '5 mg', frequency: 'OD', route: 'Oral' }
+          ],
+          allergies: [],
+          labs: [
+            { name: 'INR', value: '1.3', unit: '', reference: '2.0-3.0', is_abnormal: true },
+          ],
+        },
+        questions: [
+          {
+            id: 'q-008-1', case_id: 'seed-008',
+            question_text: 'Her admission INR is 1.3 while on Warfarin for AF. What is your assessment?',
+            option_a: 'Therapeutic.',
+            option_b: 'Sub-therapeutic; inadequate dosing likely caused the cardioembolic stroke.',
+            option_c: 'Stop anticoagulation permanently.',
+            option_d: 'Double Warfarin immediately.',
+            correct_option: 'B',
+            pci_duty_category: 'treatment_chart_review',
+            question_type: 'mcq',
+            explanation_text: 'INR 1.3 is below the 2.0-3.0 target, meaning she was unprotected from AF-induced clots.',
+            subject_reference: 'Pharmacotherapeutics - Neurology',
+          },
+          {
+            id: 'q-008-2', case_id: 'seed-008',
+            question_text: 'Is it safe to administer tPA given she is on Warfarin?',
+            option_a: 'No, any Warfarin use is an absolute contraindication.',
+            option_b: 'Yes, because her INR is ≤ 1.7.',
+            option_c: 'Only if reversed with Vitamin K first.',
+            option_d: 'Yes, give full dose tPA and Aspirin simultaneously.',
+            correct_option: 'B',
+            pci_duty_category: 'evaluate',
+            question_type: 'mcq',
+            explanation_text: 'tPA is contraindicated if INR > 1.7. At 1.3, she is eligible for thrombolysis.',
+            subject_reference: 'Pharmacotherapeutics - Neurology',
+          }
+        ]
+      },
+      {
+        id: 'seed-008-phase-2',
+        title: 'Day 2: Post-tPA Care',
+        description: 'Monitoring post-thrombolysis parameters.',
+        patient_snapshot: {
+          name: 'Kamala Prasad', age: 74, sex: 'F', ward: 'Stroke Unit', bed: 'SU-03',
+          presenting_complaint: 'Recovering post-tPA.',
+          pmh: [],
+          medications: [],
+          allergies: [],
+          labs: [
+            { name: 'BP', value: '185/100', unit: 'mmHg', reference: '<140/90', is_abnormal: true }
+          ],
+        },
+        questions: [
+          {
+            id: 'q-008-3', case_id: 'seed-008',
+            question_text: 'What must be held for 24 hours post-tPA?',
+            option_a: 'Atenolol',
+            option_b: 'Anticoagulants and antiplatelets (e.g., Aspirin, Heparin)',
+            option_c: 'Insulin',
+            option_d: 'Statins',
+            correct_option: 'B',
+            pci_duty_category: 'treatment_chart_review',
+            question_type: 'mcq',
+            explanation_text: 'To prevent hemorrhagic transformation, all blood thinners are held for 24 hours post-tPA.',
+            subject_reference: 'Pharmacotherapeutics - Neurology',
+          },
+          {
+            id: 'q-008-4', case_id: 'seed-008',
+            question_text: 'Her BP is 185/100 post-tPA. What is the goal?',
+            option_a: 'Drop it to 120/80 immediately.',
+            option_b: 'Maintain < 180/105 mmHg using IV Labetalol or Nicardipine.',
+            option_c: 'Allow permissive hypertension up to 220/120.',
+            option_d: 'Stop all BP meds.',
+            correct_option: 'B',
+            pci_duty_category: 'drug_therapy_monitoring',
+            question_type: 'mcq',
+            explanation_text: 'BP > 180/105 post-tPA drastically increases the risk of brain hemorrhage.',
+            subject_reference: 'Neurology',
+          }
+        ]
+      },
+      {
+        id: 'seed-008-phase-3',
+        title: 'Day 5: Discharge Secondary Prevention',
+        description: 'Preparing for discharge and restarting AF stroke prophylaxis.',
+        patient_snapshot: {
+          name: 'Kamala Prasad', age: 74, sex: 'F', ward: 'Stroke Unit', bed: 'SU-03',
+          presenting_complaint: 'Ready for discharge.',
+          pmh: [],
+          medications: [],
+          allergies: [],
+          labs: [],
+        },
+        questions: [
+          {
+            id: 'q-008-5', case_id: 'seed-008',
+            question_text: 'When should therapeutic anticoagulation for AF be restarted?',
+            option_a: 'Immediately.',
+            option_b: '4-14 days post-stroke after repeat imaging rules out hemorrhage.',
+            option_c: '3 months later.',
+            option_d: 'Never.',
+            correct_option: 'B',
+            pci_duty_category: 'treatment_chart_review',
+            question_type: 'mcq',
+            explanation_text: 'The "1-3-6-12" rule guides restarting anticoagulants to balance stroke prevention with bleeding risk.',
+            subject_reference: 'Neurology',
+          },
+          {
+            id: 'q-008-6', case_id: 'seed-008',
+            question_text: 'Why transition from Warfarin to a DOAC (Apixaban) in this patient?',
+            option_a: 'DOACs don\'t cause bleeding.',
+            option_b: 'DOACs offer fixed dosing without INR monitoring, improving compliance and lowering intracranial hemorrhage risk.',
+            option_c: 'DOACs are cheaper.',
+            option_d: 'DOACs reverse tPA.',
+            correct_option: 'B',
+            pci_duty_category: 'patient_counselling',
+            question_type: 'mcq',
+            explanation_text: 'Sub-therapeutic Warfarin caused her stroke. DOACs solve compliance issues and lower brain bleed risk.',
+            subject_reference: 'Pharmacotherapeutics',
+          }
+        ]
+      }
+    ],
+    study_guide: {
+      guidelines: [
+        {
+          title: 'AHA/ASA Guidelines for Acute Ischemic Stroke (2019)',
+          organization: 'AHA/ASA',
+          text: 'Alteplase (tPA) 0.9 mg/kg (max 90 mg). CONTRAINDICATIONS: INR >1.7, Platelets <100k, BP >185/110. Maintain BP <180/105 for 24h post-tPA.'
+        }
+      ],
+      calculations: [],
+      reasoning: [
+        {
+          question_text: 'Why is BP management critical post-tPA?',
+          rationale: 'Elevated BP increases the risk of bleeding into the infarcted area (hemorrhagic transformation).'
+        }
+      ],
+      mnemonics: [
+        {
+          name: 'Stroke Detection (F-A-S-T)',
+          concept: 'Acute stroke recognition',
+          bullets: [
+            'F — Face Drooping',
+            'A — Arm Weakness',
+            'S — Speech Difficulty',
+            'T — Time to call Emergency'
+          ]
+        }
+      ]
+    }
+  },
+
+  // CASE 9: GIT / HEPATOLOGY
+  {
+    id: 'seed-009',
+    title: 'Hepatic Cirrhosis & Portal Hypertension',
+    subject_area: 'git_hepatology',
+    difficulty: 'hard',
+    tags: ['Cirrhosis', 'Ascites', 'Hepatic Encephalopathy', 'Diuretics'],
+    source: 'seed',
+    created_at: '2025-01-09T00:00:00Z',
+    phases: [
+      {
+        id: 'seed-009-phase-1',
+        title: 'Day 1: Ascites Management',
+        description: 'Prakash is admitted with tense ascites and hepatic encephalopathy.',
+        patient_snapshot: {
+          name: 'Prakash Rao', age: 55, sex: 'M', ward: 'Gastroenterology', bed: '22',
+          presenting_complaint: 'Ascites and hepatic encephalopathy.',
+          pmh: ['Cirrhosis Child-Pugh C', 'Portal HTN'],
+          medications: [
+            { drug: 'Spironolactone', dose: '100 mg', frequency: 'OD', route: 'Oral' },
+            { drug: 'Furosemide', dose: '40 mg', frequency: 'OD', route: 'Oral' },
+            { drug: 'Lactulose', dose: '30 mL', frequency: 'TDS', route: 'Oral' }
+          ],
+          allergies: [],
+          labs: [
+            { name: 'NH3', value: '95', unit: 'mcmol/L', reference: '15-45', is_abnormal: true },
+            { name: 'Na+', value: '128', unit: 'mEq/L', reference: '135-145', is_abnormal: true },
+          ],
+        },
+        questions: [
+          {
+            id: 'q-009-1', case_id: 'seed-009',
+            question_text: 'What is the correct Spironolactone:Furosemide ratio for ascites management?',
+            option_a: 'Furosemide alone',
+            option_b: '100:40 (2.5:1) ratio to balance natriuresis and prevent hypokalemia.',
+            option_c: 'HCTZ instead',
+            option_d: 'Albumin only',
+            correct_option: 'B',
+            pci_duty_category: 'treatment_chart_review',
+            question_type: 'mcq',
+            explanation_text: 'AASLD guidelines mandate the 100:40 ratio to offset potassium wasting.',
+            subject_reference: 'Pharmacotherapeutics - Hepatology',
+          },
+          {
+            id: 'q-009-2', case_id: 'seed-009',
+            question_text: 'What is the combination treatment for Hepatic Encephalopathy?',
+            option_a: 'Lactulose (trap ammonia in gut) + Rifaximin (kill ammonia-producing flora).',
+            option_b: 'Neomycin + Metronidazole',
+            option_c: 'Charcoal + IV abx',
+            option_d: 'Mannitol + Dexa',
+            correct_option: 'A',
+            pci_duty_category: 'treatment_chart_review',
+            question_type: 'mcq',
+            explanation_text: 'Lactulose converts NH3 to non-absorbable NH4+. Rifaximin suppresses gut bacteria.',
+            subject_reference: 'Pharmacotherapeutics - Hepatology',
+          }
+        ]
+      },
+      {
+        id: 'seed-009-phase-2',
+        title: 'Day 3: Variceal Prophylaxis',
+        description: 'Ascites improving, adjusting meds for portal hypertension.',
+        patient_snapshot: {
+          name: 'Prakash Rao', age: 55, sex: 'M', ward: 'Gastroenterology', bed: '22',
+          presenting_complaint: 'Optimizing portal HTN meds.',
+          pmh: [],
+          medications: [
+            { drug: 'Propranolol', dose: '40 mg', frequency: 'BD', route: 'Oral' },
+          ],
+          allergies: [],
+          labs: [
+            { name: 'Heart Rate', value: '75', unit: 'bpm', reference: '60-100', is_abnormal: false }
+          ],
+        },
+        questions: [
+          {
+            id: 'q-009-3', case_id: 'seed-009',
+            question_text: 'What is the target heart rate for Propranolol in portal hypertension?',
+            option_a: '100-110 bpm',
+            option_b: 'Resting HR 55-60 bpm (or 25% reduction from baseline).',
+            option_c: 'No target',
+            option_d: 'SBP < 100',
+            correct_option: 'B',
+            pci_duty_category: 'drug_therapy_monitoring',
+            question_type: 'mcq',
+            explanation_text: 'Non-selective beta-blockers reduce portal pressure; efficacy is measured by achieving HR 55-60.',
+            subject_reference: 'Pharmacotherapeutics - Hepatology',
+          },
+          {
+            id: 'q-009-4', case_id: 'seed-009',
+            question_text: 'If he undergoes large-volume paracentesis (>5L drained), what IV fluid is required?',
+            option_a: 'Normal Saline',
+            option_b: 'IV Albumin (8g per liter of ascites removed) to prevent circulatory dysfunction.',
+            option_c: 'Dextrose 5%',
+            option_d: 'Ringer\'s Lactate',
+            correct_option: 'B',
+            pci_duty_category: 'treatment_chart_review',
+            question_type: 'mcq',
+            explanation_text: 'Albumin maintains oncotic pressure, preventing post-paracentesis circulatory dysfunction and renal failure.',
+            subject_reference: 'Hepatology',
+          }
+        ]
+      },
+      {
+        id: 'seed-009-phase-3',
+        title: 'Day 6: Discharge Caution',
+        description: 'Counseling on discharge medications.',
+        patient_snapshot: {
+          name: 'Prakash Rao', age: 55, sex: 'M', ward: 'Gastroenterology', bed: '22',
+          presenting_complaint: 'Ready for home.',
+          pmh: [],
+          medications: [],
+          allergies: [],
+          labs: [],
+        },
+        questions: [
+          {
+            id: 'q-009-5', case_id: 'seed-009',
+            question_text: 'Which class of over-the-counter medication must be absolutely avoided in cirrhosis?',
+            option_a: 'Paracetamol (in normal doses)',
+            option_b: 'NSAIDs (e.g., Ibuprofen) due to risk of precipitating Hepatorenal Syndrome and GI bleeds.',
+            option_c: 'Antacids',
+            option_d: 'Vitamin C',
+            correct_option: 'B',
+            pci_duty_category: 'patient_counselling',
+            question_type: 'mcq',
+            explanation_text: 'NSAIDs inhibit renal prostaglandins, destroying GFR in cirrhotics and causing hepatorenal syndrome.',
+            subject_reference: 'Pharmacotherapeutics - Safety',
+          },
+          {
+            id: 'q-009-6', case_id: 'seed-009',
+            question_text: 'What fluid and dietary restriction is critical for ascites management?',
+            option_a: 'High protein diet.',
+            option_b: 'Sodium restriction (<2g/day) is more critical than fluid restriction.',
+            option_c: 'Total fluid restriction to 500 mL/day.',
+            option_d: 'No restrictions.',
+            correct_option: 'B',
+            pci_duty_category: 'patient_counselling',
+            question_type: 'mcq',
+            explanation_text: 'Ascites is driven by sodium retention. Salt restriction is primary; fluid restriction is only for severe hyponatremia.',
+            subject_reference: 'Hepatology',
+          }
+        ]
+      }
+    ],
+    study_guide: {
+      guidelines: [
+        {
+          title: 'EASL Guidelines on Decompensated Cirrhosis (2018)',
+          organization: 'EASL',
+          text: 'Spironolactone 100 mg : Furosemide 40 mg ratio. Avoid NSAIDs. Lactulose is first-line for HE.'
+        }
+      ],
+      calculations: [],
+      reasoning: [
+        {
+          question_text: 'Why Lactulose over Neomycin?',
+          rationale: 'Lactulose is non-absorbable and safe long-term. Neomycin has systemic absorption causing ototoxicity and nephrotoxicity.'
+        }
+      ],
+      mnemonics: [
+        {
+          name: 'Hepatic Encephalopathy Precipitants (H-E-P-A-T-I-C)',
+          concept: 'Triggers of HE',
+          bullets: [
+            'H — Hemorrhage (GI bleed)',
+            'E — Electrolytes (Hypokalemia)',
+            'P — Protein excess',
+            'A — Alcohol/Infection',
+            'T — Toxins (Sedatives/NSAIDs)',
+            'I — Increasing urea (AKI)',
+            'C — Constipation'
+          ]
+        }
+      ]
+    }
+  },
+
+  // CASE 10: RHEUMATOLOGY
+  {
+    id: 'seed-010',
+    title: 'Rheumatoid Arthritis & Methotrexate Toxicity',
+    subject_area: 'community_pharmacy',
+    difficulty: 'medium',
+    tags: ['Methotrexate', 'Rheumatoid Arthritis', 'Medication Error', 'Leucovorin'],
+    source: 'seed',
+    created_at: '2025-01-10T00:00:00Z',
+    phases: [
+      {
+        id: 'seed-010-phase-1',
+        title: 'Day 1: Toxicity Presentation',
+        description: 'Meera presents with pancytopenia from accidental daily Methotrexate.',
+        patient_snapshot: {
+          name: 'Meera Joshi', age: 52, sex: 'F', ward: 'Rheumatology', bed: '11',
+          presenting_complaint: 'Pancytopenia, oral ulcers from daily MTX.',
+          pmh: ['RA', 'CKD Stage 2'],
+          medications: [
+            { drug: 'Methotrexate', dose: '10 mg', frequency: 'DAILY (ERROR)', route: 'Oral' },
+            { drug: 'Naproxen', dose: '250 mg', frequency: 'BD', route: 'Oral' },
+          ],
+          allergies: [],
+          labs: [
+            { name: 'WBC', value: '1.5', unit: 'x10^9/L', reference: '4.0-11.0', is_abnormal: true },
+            { name: 'Platelets', value: '45', unit: 'x10^3/uL', reference: '150-450', is_abnormal: true },
+          ],
+        },
+        questions: [
+          {
+            id: 'q-010-1', case_id: 'seed-010',
+            question_text: 'Critical immediate intervention for MTX toxicity?',
+            option_a: 'Increase Folic Acid.',
+            option_b: 'Stop MTX + Administer Leucovorin (Folinic Acid) rescue 10-25 mg IV Q6H.',
+            option_c: 'Continue MTX + add antibiotics.',
+            option_d: 'Activated charcoal.',
+            correct_option: 'B',
+            pci_duty_category: 'drug_poison_info',
+            question_type: 'mcq',
+            explanation_text: 'Leucovorin bypasses the DHFR block to directly rescue normal cells from folate depletion.',
+            subject_reference: 'Pharmacotherapeutics - Rheumatology',
+          },
+          {
+            id: 'q-010-2', case_id: 'seed-010',
+            question_text: 'Which home drug worsened her MTX toxicity by reducing renal clearance?',
+            option_a: 'Prednisolone',
+            option_b: 'Folic Acid',
+            option_c: 'Naproxen (NSAIDs compete for tubular secretion)',
+            option_d: 'None',
+            correct_option: 'C',
+            pci_duty_category: 'drug_interaction',
+            question_type: 'mcq',
+            explanation_text: 'NSAIDs reduce renal blood flow and block tubular secretion, raising MTX to toxic levels.',
+            subject_reference: 'Pharmacotherapeutics - Drug Interactions',
+          }
+        ]
+      },
+      {
+        id: 'seed-010-phase-2',
+        title: 'Day 3: Rescue Monitoring',
+        description: 'Monitoring bone marrow recovery and preventing renal crystallization.',
+        patient_snapshot: {
+          name: 'Meera Joshi', age: 52, sex: 'F', ward: 'Rheumatology', bed: '11',
+          presenting_complaint: 'Recovering from toxicity.',
+          pmh: [],
+          medications: [
+            { drug: 'Leucovorin', dose: '15 mg', frequency: 'Q6H', route: 'IV' }
+          ],
+          allergies: [],
+          labs: [
+            { name: 'Urine pH', value: '5.5', unit: '', reference: '6.5-8.0', is_abnormal: true }
+          ],
+        },
+        questions: [
+          {
+            id: 'q-010-3', case_id: 'seed-010',
+            question_text: 'To prevent MTX from precipitating in the kidneys, what IV fluid strategy is used?',
+            option_a: 'Fluid restriction.',
+            option_b: 'Aggressive hydration with IV Sodium Bicarbonate to alkalinize the urine (pH > 7).',
+            option_c: 'IV Furosemide.',
+            option_d: 'Normal Saline only.',
+            correct_option: 'B',
+            pci_duty_category: 'treatment_chart_review',
+            question_type: 'mcq',
+            explanation_text: 'MTX precipitates in acidic urine. Alkalinization keeps it soluble for excretion.',
+            subject_reference: 'Pharmacokinetics',
+          },
+          {
+            id: 'q-010-4', case_id: 'seed-010',
+            question_text: 'Which drug class inhibits OAT3, further spiking MTX levels?',
+            option_a: 'Beta-blockers',
+            option_b: 'Proton Pump Inhibitors (PPIs)',
+            option_c: 'Statins',
+            option_d: 'Antihistamines',
+            correct_option: 'B',
+            pci_duty_category: 'drug_interaction',
+            question_type: 'mcq',
+            explanation_text: 'PPIs compete with MTX at the OAT3 transporter, preventing its renal excretion.',
+            subject_reference: 'Drug Interactions',
+          }
+        ]
+      },
+      {
+        id: 'seed-010-phase-3',
+        title: 'Discharge & Counseling',
+        description: 'Counseling to prevent future fatal errors.',
+        patient_snapshot: {
+          name: 'Meera Joshi', age: 52, sex: 'F', ward: 'Rheumatology', bed: '11',
+          presenting_complaint: 'Discharge counseling.',
+          pmh: [],
+          medications: [],
+          allergies: [],
+          labs: [],
+        },
+        questions: [
+          {
+            id: 'q-010-5', case_id: 'seed-010',
+            question_text: 'Key counseling point to prevent future MTX errors?',
+            option_a: 'Take with milk.',
+            option_b: 'ONCE A WEEK on the same day; never daily.',
+            option_c: 'Take only during flares.',
+            option_d: 'Combine with any NSAID.',
+            correct_option: 'B',
+            pci_duty_category: 'patient_counselling',
+            question_type: 'mcq',
+            explanation_text: 'Accidental daily dosing of weekly MTX is a frequent fatal error requiring explicit counseling.',
+            subject_reference: 'Pharmacotherapeutics - Patient Safety',
+          },
+          {
+            id: 'q-010-6', case_id: 'seed-010',
+            question_text: 'What is the REMS/pregnancy status of MTX?',
+            option_a: 'Safe in all trimesters.',
+            option_b: 'Category X teratogen; requires strict contraception and 3-month washout before conception.',
+            option_c: 'Safe in males only.',
+            option_d: 'Causes gestational diabetes.',
+            correct_option: 'B',
+            pci_duty_category: 'patient_counselling',
+            question_type: 'mcq',
+            explanation_text: 'MTX is highly teratogenic. Both males and females need a 3-month washout before planned conception.',
+            subject_reference: 'Reproductive Health',
+          }
+        ]
+      }
+    ],
+    study_guide: {
+      guidelines: [
+        {
+          title: 'ACR Guideline for Treatment of Rheumatoid Arthritis (2021)',
+          organization: 'ACR',
+          text: 'MTX is the anchor DMARD. Prescribed ONCE-WEEKLY. Folic acid 1-5 mg daily reduces ADRs.'
+        }
+      ],
+      calculations: [],
+      reasoning: [
+        {
+          question_text: 'Why does Leucovorin rescue work while standard Folic Acid does not?',
+          rationale: 'MTX blocks DHFR. Folic acid needs DHFR to activate. Leucovorin is PRE-REDUCED and bypasses DHFR completely.'
+        }
+      ],
+      mnemonics: [
+        {
+          name: 'MTX Toxicity (M-U-C-O-S-A)',
+          concept: 'Toxicity signs',
+          bullets: [
+            'M — Mucositis (First sign)',
+            'U — Urine precipitation',
+            'C — CBC suppression',
+            'O — Omission error (Daily instead of weekly)',
+            'S — Sore throat (Neutropenia)',
+            'A — Alveolitis'
+          ]
+        }
+      ]
+    }
+  },
+
+  // CASE 11: ONCOLOGY / INFECTIOUS DISEASES
+  {
+    id: 'seed-011',
+    title: 'Post-Chemotherapy Febrile Neutropenia',
+    subject_area: 'oncology_hematology',
+    difficulty: 'hard',
+    tags: ['Febrile Neutropenia', 'Oncology', 'G-CSF', 'Pseudomonas'],
+    source: 'seed',
+    created_at: '2025-01-11T00:00:00Z',
+    phases: [
+      {
+        id: 'seed-011-phase-1',
+        title: 'Day 1: Febrile Neutropenia',
+        description: 'Patient presents with fever 10 days post-chemo. Penicillin allergy.',
+        patient_snapshot: {
+          name: 'Priya Sharma', age: 45, sex: 'F', ward: 'Oncology', bed: '5A',
+          presenting_complaint: 'Fever 10 days after chemo.',
+          pmh: ['Non-Hodgkin Lymphoma'],
+          medications: [
+            { drug: 'Filgrastim (G-CSF)', dose: '300 mcg', frequency: 'OD', route: 'SC' }
+          ],
+          allergies: ['Penicillin (Anaphylaxis)'],
+          labs: [
+            { name: 'Temp', value: '39.2', unit: '°C', reference: '36.5-37.5', is_abnormal: true },
+            { name: 'ANC', value: '300', unit: 'cells/mm3', reference: '>1500', is_abnormal: true }
+          ]
+        },
+        questions: [
+          {
+            id: 'q-011-1', case_id: 'seed-011',
+            question_text: 'Which empiric antibiotic is most appropriate given severe Penicillin anaphylaxis?',
+            option_a: 'Piperacillin-Tazobactam',
+            option_b: 'Cefepime',
+            option_c: 'Meropenem',
+            option_d: 'Aztreonam plus Vancomycin',
+            correct_option: 'D',
+            pci_duty_category: 'treatment_chart_review',
+            question_type: 'mcq',
+            explanation_text: 'Aztreonam provides anti-pseudomonal coverage with zero cross-reactivity to penicillins. Vancomycin covers the gram-positives.',
+            subject_reference: 'Oncology Pharmacy'
+          },
+          {
+            id: 'q-011-2', case_id: 'seed-011',
+            question_text: 'What is a critical timing rule for administering Filgrastim (G-CSF)?',
+            option_a: 'Give simultaneously with chemo.',
+            option_b: 'Must not be given within 24 hours before or after cytotoxic chemotherapy.',
+            option_c: 'Give only orally.',
+            option_d: 'Only give if ANC is normal.',
+            correct_option: 'B',
+            pci_duty_category: 'patient_counselling',
+            question_type: 'mcq',
+            explanation_text: 'G-CSF stimulates rapidly dividing myeloid cells, making them susceptible to the cytotoxic effects of chemotherapy if given simultaneously.',
+            subject_reference: 'Oncology Pharmacy'
+          }
+        ]
+      },
+      {
+        id: 'seed-011-phase-2',
+        title: 'Day 3: Antibiotic Escalation',
+        description: 'Persistent fever despite 48h of Aztreonam. Blood culture shows Gram-positive cocci.',
+        patient_snapshot: {
+          name: 'Priya Sharma', age: 45, sex: 'F', ward: 'Oncology', bed: '5A',
+          presenting_complaint: 'Persistent fever, central line port looks red.',
+          pmh: [],
+          medications: [],
+          allergies: [],
+          labs: [
+            { name: 'Blood Culture', value: 'Gram-positive cocci', unit: '', reference: 'Negative', is_abnormal: true }
+          ]
+        },
+        questions: [
+          {
+            id: 'q-011-3', case_id: 'seed-011',
+            question_text: 'Based on IDSA guidelines, what is an explicit indication to add Vancomycin to the empiric regimen?',
+            option_a: 'All febrile neutropenia patients get Vancomycin.',
+            option_b: 'Suspected catheter-related infection, hemodynamic instability, or positive gram-positive culture.',
+            option_c: 'Only if Pseudomonas is found.',
+            option_d: 'Never use Vancomycin in oncology.',
+            correct_option: 'B',
+            pci_duty_category: 'treatment_chart_review',
+            question_type: 'mcq',
+            explanation_text: 'Routine Vancomycin is not recommended unless specific criteria like central line infection, MRSA colonization, or shock are present.',
+            subject_reference: 'Infectious Diseases'
+          },
+          {
+            id: 'q-011-4', case_id: 'seed-011',
+            question_text: 'What infection control precautions are mandatory for her?',
+            option_a: 'Reverse isolation (positive pressure room) and strict hand hygiene.',
+            option_b: 'Airborne isolation (negative pressure).',
+            option_c: 'Standard precautions only.',
+            option_d: 'No isolation needed.',
+            correct_option: 'A',
+            pci_duty_category: 'patient_counselling',
+            question_type: 'mcq',
+            explanation_text: 'Neutropenic patients need protection from external environmental pathogens (Reverse Isolation).',
+            subject_reference: 'Clinical Pharmacy'
+          }
+        ]
+      },
+      {
+        id: 'seed-011-phase-3',
+        title: 'Day 8: Resolution & Future Prep',
+        description: 'ANC recovered. Preparing for next cycle of highly emetogenic chemotherapy.',
+        patient_snapshot: {
+          name: 'Priya Sharma', age: 45, sex: 'F', ward: 'Oncology', bed: '5A',
+          presenting_complaint: 'Recovered. Discussing antiemetics.',
+          pmh: [],
+          medications: [],
+          allergies: [],
+          labs: [
+            { name: 'ANC', value: '2500', unit: 'cells/mm3', reference: '>1500', is_abnormal: false }
+          ]
+        },
+        questions: [
+          {
+            id: 'q-011-5', case_id: 'seed-011',
+            question_text: 'When can empiric antibiotics be safely stopped?',
+            option_a: 'After exactly 7 days.',
+            option_b: 'Afebrile for ≥48h AND ANC > 500 cells/μL on two consecutive days.',
+            option_c: 'Once the fever breaks.',
+            option_d: 'When blood culture is negative at 24h.',
+            correct_option: 'B',
+            pci_duty_category: 'evaluate',
+            question_type: 'mcq',
+            explanation_text: 'Both clinical resolution (afebrile) and immune recovery (ANC > 500) are required to safely stop antibiotics.',
+            subject_reference: 'Infectious Diseases'
+          },
+          {
+            id: 'q-011-6', case_id: 'seed-011',
+            question_text: 'For her next Highly Emetogenic cycle, what 4-drug antiemetic prophylaxis is standard?',
+            option_a: 'Ondansetron only.',
+            option_b: 'NK1 Antagonist (Aprepitant) + 5-HT3 Antagonist + Dexamethasone + Olanzapine.',
+            option_c: 'Metoclopramide + Dexamethasone.',
+            option_d: 'Promethazine + Lorazepam.',
+            correct_option: 'B',
+            pci_duty_category: 'treatment_chart_review',
+            question_type: 'mcq',
+            explanation_text: 'ASCO guidelines recommend a 4-drug combination to cover both acute (5-HT3) and delayed (NK1) nausea pathways.',
+            subject_reference: 'Oncology Pharmacy'
+          }
+        ]
+      }
+    ],
+    study_guide: {
+      guidelines: [
+        {
+          title: 'IDSA Guidelines for Febrile Neutropenia (2018)',
+          organization: 'IDSA',
+          text: 'Empiric therapy must start within 1 hour. Monotherapy with antipseudomonal beta-lactam is standard.'
+        }
+      ],
+      calculations: [
+        {
+          name: 'Absolute Neutrophil Count (ANC)',
+          formula: 'ANC = WBC × [(%Segs + %Bands) / 100]',
+          explanation: 'ANC < 500 defines severe neutropenia risk.'
+        }
+      ],
+      reasoning: [
+        {
+          question_text: 'Why target Pseudomonas?',
+          rationale: 'Pseudomonas progresses from bacteremia to fatal septic shock in neutropenic hosts within 24-48 hours.'
+        }
+      ],
+      mnemonics: [
+        {
+          name: 'Anti-Pseudomonal Beta-Lactams (P-I-P-E-R)',
+          concept: 'Empiric options',
+          bullets: [
+            'P — Piperacillin-Tazobactam',
+            'I — Imipenem/Meropenem',
+            'P — Penems + Vanc (if specific indications)',
+            'E — Cefepime',
+            'R — Ceftazidime'
+          ]
+        }
+      ]
+    }
+  }
+export const phaseTwoCases = [
+  // CASE 12: CRITICAL CARE / INFECTIONS
+  {
+    id: 'seed-012',
+    title: 'Septic Shock & Intensive Care Management',
+    subject_area: 'infectious_diseases',
+    difficulty: 'hard',
+    tags: ['Sepsis', 'Norepinephrine', 'Meropenem', 'Pharmacokinetics', 'ICU'],
+    phases: [
+      {
+        id: 'seed-012-phase-1',
+        title: 'Hour 1: Septic Shock Bundle',
+        description: 'Patient in septic shock requiring immediate resuscitation.',
+        patient_snapshot: {
+          name: 'Ravi Kumar', age: 62, sex: 'M', ward: 'ICU', bed: '2',
+          presenting_complaint: 'Septic shock, BP 80/50 despite fluids.',
+          pmh: ['Type 2 Diabetes'],
+          medications: [
+            { drug: 'Norepinephrine', dose: '0.1 mcg/kg/min', frequency: 'Continuous', route: 'IV' }
+          ],
+          allergies: ['None'],
+          labs: [
+            { name: 'BP', value: '80/50', unit: 'mmHg', reference: '120/80', is_abnormal: true },
+            { name: 'Lactate', value: '4.5', unit: 'mmol/L', reference: '<2.0', is_abnormal: true }
+          ]
+        },
+        questions: [
+          {
+            id: 'q-012-1', case_id: 'seed-012',
+            question_text: 'Which is a critical safety consideration for Norepinephrine administration?',
+            option_a: 'Only give via peripheral IV.',
+            option_b: 'Must be administered via a central venous catheter due to severe extravasation necrosis risk.',
+            option_c: 'Mix with sodium bicarbonate.',
+            option_d: 'Give as rapid IV bolus.',
+            correct_option: 'B',
+            pci_duty_category: 'treatment_chart_review',
+            question_type: 'mcq',
+            explanation_text: 'Vasopressors like Norepinephrine cause severe tissue necrosis if they extravasate. A central line is mandatory.',
+            subject_reference: 'Critical Care'
+          },
+          {
+            id: 'q-012-2', case_id: 'seed-012',
+            question_text: 'According to the SSC 1-Hour Bundle, which action must precede empiric antibiotics if possible?',
+            option_a: 'CT Scan of the abdomen.',
+            option_b: 'Obtaining 2 sets of blood cultures (aerobic and anaerobic).',
+            option_c: 'Foley catheter placement.',
+            option_d: 'Echocardiogram.',
+            correct_option: 'B',
+            pci_duty_category: 'evaluate',
+            question_type: 'mcq',
+            explanation_text: 'Blood cultures must be drawn before antibiotics to ensure pathogen yield, provided it does not delay antibiotics by >45 minutes.',
+            subject_reference: 'Infectious Diseases'
+          }
+        ]
+      },
+      {
+        id: 'seed-012-phase-2',
+        title: 'Hour 6: Pharmacokinetic Optimization',
+        description: 'Antibiotics are ordered. Optimizing PK/PD for severe sepsis.',
+        patient_snapshot: {
+          name: 'Ravi Kumar', age: 62, sex: 'M', ward: 'ICU', bed: '2',
+          presenting_complaint: 'Optimizing antimicrobial dosing.',
+          pmh: [],
+          medications: [
+            { drug: 'Meropenem', dose: '1 g', frequency: 'Q8H', route: 'IV' },
+            { drug: 'Vancomycin', dose: '15 mg/kg', frequency: 'Q12H', route: 'IV' }
+          ],
+          allergies: [],
+          labs: []
+        },
+        questions: [
+          {
+            id: 'q-012-3', case_id: 'seed-012',
+            question_text: 'To optimize the pharmacodynamics of Meropenem in septic shock, which administration strategy is preferred?',
+            option_a: 'Rapid IV push over 5 minutes.',
+            option_b: 'Extended infusion over 3-4 hours to maximize Time > MIC.',
+            option_c: 'Once daily dosing.',
+            option_d: 'IM administration.',
+            correct_option: 'B',
+            pci_duty_category: 'drug_therapy_monitoring',
+            question_type: 'mcq',
+            explanation_text: 'Beta-lactams are time-dependent. Extended infusions maintain levels above the MIC longer, improving outcomes in critically ill patients.',
+            subject_reference: 'Pharmacokinetics'
+          },
+          {
+            id: 'q-012-4', case_id: 'seed-012',
+            question_text: 'What is the standard target trough level for Vancomycin in complicated sepsis (e.g., suspected MRSA pneumonia/bacteremia)?',
+            option_a: '5-10 mg/L',
+            option_b: '10-15 mg/L',
+            option_c: '15-20 mg/L',
+            option_d: '25-30 mg/L',
+            correct_option: 'C',
+            pci_duty_category: 'drug_therapy_monitoring',
+            question_type: 'mcq',
+            explanation_text: 'For severe infections like sepsis/pneumonia, target troughs are 15-20 mg/L (or AUC/MIC 400-600) to ensure tissue penetration and avoid resistance.',
+            subject_reference: 'Pharmacokinetics'
+          }
+        ]
+      },
+      {
+        id: 'seed-012-phase-3',
+        title: 'Day 2: VTE Prophylaxis & Complications',
+        description: 'Reviewing supportive ICU care.',
+        patient_snapshot: {
+          name: 'Ravi Kumar', age: 62, sex: 'M', ward: 'ICU', bed: '2',
+          presenting_complaint: 'Day 2 ICU management.',
+          pmh: [],
+          medications: [
+            { drug: 'Enoxaparin', dose: '40 mg', frequency: 'OD', route: 'SC' }
+          ],
+          allergies: [],
+          labs: [
+            { name: 'eGFR', value: '25', unit: 'mL/min', reference: '>60', is_abnormal: true }
+          ]
+        },
+        questions: [
+          {
+            id: 'q-012-5', case_id: 'seed-012',
+            question_text: 'His eGFR has dropped to 25 mL/min (AKI). How should his VTE prophylaxis be adjusted?',
+            option_a: 'Stop VTE prophylaxis.',
+            option_b: 'Reduce Enoxaparin to 30 mg OD or switch to Unfractionated Heparin 5000 units SC Q8H.',
+            option_c: 'Double the Enoxaparin dose.',
+            option_d: 'Switch to Warfarin.',
+            correct_option: 'B',
+            pci_duty_category: 'treatment_chart_review',
+            question_type: 'mcq',
+            explanation_text: 'Enoxaparin accumulates in severe renal impairment (eGFR <30). UFH is preferred in AKI as it is hepatically cleared.',
+            subject_reference: 'Critical Care'
+          },
+          {
+            id: 'q-012-6', case_id: 'seed-012',
+            question_text: 'If he requires intubation, why should Etomidate be used cautiously?',
+            option_a: 'It causes severe hypertension.',
+            option_b: 'It can cause adrenal suppression, which is detrimental in septic shock.',
+            option_c: 'It causes hyperkalemia.',
+            option_d: 'It triggers malignant hyperthermia.',
+            correct_option: 'B',
+            pci_duty_category: 'adr_detection',
+            question_type: 'mcq',
+            explanation_text: 'Etomidate inhibits 11-beta-hydroxylase, causing transient adrenal suppression. In sepsis, this can worsen shock.',
+            subject_reference: 'Critical Care'
+          }
+        ]
+      }
+    ],
+    study_guide: {
+      guidelines: [
+        {
+          title: 'Surviving Sepsis Campaign Guidelines (2021)',
+          organization: 'SSC/SCCM',
+          text: 'The 1-hour bundle: Measure lactate, get blood cultures, start broad-spectrum antibiotics, administer 30 mL/kg crystalloids, start vasopressors (Norepinephrine first-line) if MAP <65 mmHg.'
+        }
+      ],
+      calculations: [],
+      reasoning: [
+        {
+          question_text: 'Why Extended Infusion Meropenem?',
+          rationale: 'Maximizes Time > MIC, crucial for clearing resistant Gram-negative organisms.'
+        }
+      ],
+      mnemonics: [
+        {
+          name: 'Sepsis 1-Hour Bundle (L-C-A-F-V)',
+          concept: 'Measurable, time-bound interventions',
+          bullets: [
+            'L — Lactate (re-measure if >2)',
+            'C — Cultures (before Abx)',
+            'A — Antibiotics (broad-spectrum within 1 hour)',
+            'F — Fluids (30mL/kg crystalloids)',
+            'V — Vasopressors (Norepinephrine target MAP >65)'
+          ]
+        }
+      ]
+    }
+  },
+
+  // CASE 13: NEUROLOGY/PSYCHIATRY
+  {
+    id: 'seed-013',
+    title: 'Major Depressive Disorder & Serotonin Syndrome',
+    subject_area: 'neurology_psychiatry',
+    difficulty: 'medium',
+    tags: ['Serotonin Syndrome', 'Tramadol', 'Ondansetron', 'Cyproheptadine', 'Toxicology'],
+    phases: [
+      {
+        id: 'seed-013-phase-1',
+        title: 'Hour 1: Toxidrome Recognition',
+        description: 'Patient presents with agitation, fever, and clonus.',
+        patient_snapshot: {
+          name: 'Anjali Verma', age: 28, sex: 'F', ward: 'Emergency', bed: '4',
+          presenting_complaint: 'Agitation, diaphoresis, clonus.',
+          pmh: ['MDD'],
+          medications: [
+            { drug: 'Fluoxetine', dose: '40 mg', frequency: 'OD', route: 'Oral' },
+            { drug: 'Tramadol', dose: '50 mg', frequency: 'TDS', route: 'Oral' },
+            { drug: 'Ondansetron', dose: '8 mg', frequency: 'BD PRN', route: 'Oral' }
+          ],
+          allergies: ['None'],
+          labs: [
+            { name: 'Temp', value: '38.5', unit: '°C', reference: '36.5-37.5', is_abnormal: true },
+            { name: 'Reflexes', value: 'Hyperreflexia and Clonus', unit: '', reference: 'Normal', is_abnormal: true }
+          ]
+        },
+        questions: [
+          {
+            id: 'q-013-1', case_id: 'seed-013',
+            question_text: 'The combination of Fluoxetine, Tramadol, and Ondansetron has precipitated which condition?',
+            option_a: 'Neuroleptic Malignant Syndrome',
+            option_b: 'Serotonin Syndrome',
+            option_c: 'Malignant Hyperthermia',
+            option_d: 'Anticholinergic Toxicity',
+            correct_option: 'B',
+            pci_duty_category: 'drug_interaction',
+            question_type: 'mcq',
+            explanation_text: 'All three drugs increase serotonergic activity, causing Serotonin Syndrome characterized by hyperreflexia, clonus, and fever.',
+            subject_reference: 'Toxicology'
+          },
+          {
+            id: 'q-013-2', case_id: 'seed-013',
+            question_text: 'How does Serotonin Syndrome\'s neuromuscular presentation differ from NMS?',
+            option_a: 'SS causes "lead-pipe" rigidity.',
+            option_b: 'SS causes hyperreflexia and clonus; NMS causes "lead-pipe" rigidity and bradykinesia.',
+            option_c: 'Only SS causes high fever.',
+            option_d: 'NMS causes miosis.',
+            correct_option: 'B',
+            pci_duty_category: 'drug_poison_info',
+            question_type: 'mcq',
+            explanation_text: 'SS has hyperkinesia (clonus, hyperreflexia), while NMS features severe muscle rigidity without clonus.',
+            subject_reference: 'Toxicology'
+          }
+        ]
+      },
+      {
+        id: 'seed-013-phase-2',
+        title: 'Hour 2: Antidote Administration',
+        description: 'Symptoms worsening. Considering targeted antidote therapy.',
+        patient_snapshot: {
+          name: 'Anjali Verma', age: 28, sex: 'F', ward: 'ICU', bed: '3',
+          presenting_complaint: 'Severe clonus and hyperthermia.',
+          pmh: [],
+          medications: [],
+          allergies: [],
+          labs: []
+        },
+        questions: [
+          {
+            id: 'q-013-3', case_id: 'seed-013',
+            question_text: 'What is the pharmacological antidote of choice for severe Serotonin Syndrome?',
+            option_a: 'Flumazenil',
+            option_b: 'Cyproheptadine (5-HT2A antagonist)',
+            option_c: 'Dantrolene',
+            option_d: 'Naloxone',
+            correct_option: 'B',
+            pci_duty_category: 'drug_poison_info',
+            question_type: 'mcq',
+            explanation_text: 'Cyproheptadine blocks serotonin receptors (specifically 5-HT2A) reversing the toxicity.',
+            subject_reference: 'Toxicology'
+          },
+          {
+            id: 'q-013-4', case_id: 'seed-013',
+            question_text: 'Which medication should be used for acute agitation and muscle rigidity control in this patient?',
+            option_a: 'Haloperidol',
+            option_b: 'IV Lorazepam (Benzodiazepines)',
+            option_c: 'Morphine',
+            option_d: 'Propofol',
+            correct_option: 'B',
+            pci_duty_category: 'treatment_chart_review',
+            question_type: 'mcq',
+            explanation_text: 'Benzodiazepines are front-line for controlling agitation and muscle hypertonicity in SS.',
+            subject_reference: 'Toxicology'
+          }
+        ]
+      },
+      {
+        id: 'seed-013-phase-3',
+        title: 'Day 3: Alternative Analgesia',
+        description: 'SS resolved. Patient requires pain control for an unrelated sprain.',
+        patient_snapshot: {
+          name: 'Anjali Verma', age: 28, sex: 'F', ward: 'General', bed: '4',
+          presenting_complaint: 'Recovered, needs analgesia.',
+          pmh: [],
+          medications: [
+            { drug: 'Fluoxetine', dose: '40 mg', frequency: 'OD', route: 'Oral' }
+          ],
+          allergies: [],
+          labs: []
+        },
+        questions: [
+          {
+            id: 'q-013-5', case_id: 'seed-013',
+            question_text: 'Which analgesic is safe to use with her Fluoxetine?',
+            option_a: 'Tramadol',
+            option_b: 'Paracetamol / Ibuprofen',
+            option_c: 'Fentanyl',
+            option_d: 'Meperidine',
+            correct_option: 'B',
+            pci_duty_category: 'evaluate',
+            question_type: 'mcq',
+            explanation_text: 'NSAIDs and Paracetamol do not have serotonergic activity.',
+            subject_reference: 'Pharmacotherapeutics'
+          },
+          {
+            id: 'q-013-6', case_id: 'seed-013',
+            question_text: 'If switching her off Fluoxetine to an MAOI, how long is the required washout period?',
+            option_a: '2 days',
+            option_b: '5 weeks',
+            option_c: '14 days',
+            option_d: 'No washout needed',
+            correct_option: 'B',
+            pci_duty_category: 'treatment_chart_review',
+            question_type: 'mcq',
+            explanation_text: 'Fluoxetine has a very long half-life (including its active metabolite). A 5-week washout is required before starting an MAOI.',
+            subject_reference: 'Psychiatry'
+          }
+        ]
+      }
+    ],
+    study_guide: {
+      guidelines: [
+        {
+          title: 'Hunter Serotonin Toxicity Criteria',
+          organization: 'ACMT',
+          text: 'Diagnosis requires serotonergic agent + clonus (spontaneous, inducible, or ocular) OR tremor + hyperreflexia.'
+        }
+      ],
+      calculations: [],
+      reasoning: [
+        {
+          question_text: 'Why does Tramadol cause SS?',
+          rationale: 'Tramadol is an SNRI in addition to a weak mu-opioid agonist, directly increasing synaptic serotonin.'
+        }
+      ],
+      mnemonics: [
+        {
+          name: 'SS vs NMS (SHIVER vs SLOW)',
+          concept: 'Differentiating toxidromes',
+          bullets: [
+            'S-S: SHIVER (Shivering, Hyperreflexia/Clonus, Instability, Vomiting, Excited, Rapid onset)',
+            'N-M-S: SLOW (Slow onset, Lead-pipe rigidity, Obtunded, Waxy rigidity)'
+          ]
+        }
+      ]
+    }
+  },
+
+  // CASE 14: NEPHROLOGY
+  {
+    id: 'seed-014',
+    title: 'Drug-Induced AKI (The Triple Whammy)',
+    subject_area: 'nephrology',
+    difficulty: 'hard',
+    tags: ['AKI', 'Triple Whammy', 'Hyperkalemia', 'Calcium Gluconate', 'NSAIDs'],
+    phases: [
+      {
+        id: 'seed-014-phase-1',
+        title: 'Day 1: AKI Recognition',
+        description: 'Patient admitted with oliguria and hyperkalemia.',
+        patient_snapshot: {
+          name: 'Mohammad Ali', age: 70, sex: 'M', ward: 'Nephrology', bed: '10',
+          presenting_complaint: 'Oliguria and rising SCr.',
+          pmh: ['Heart Failure', 'Osteoarthritis'],
+          medications: [
+            { drug: 'Enalapril', dose: '10 mg', frequency: 'OD', route: 'Oral' },
+            { drug: 'Furosemide', dose: '40 mg', frequency: 'OD', route: 'Oral' },
+            { drug: 'Ibuprofen', dose: '400 mg', frequency: 'TDS', route: 'Oral' },
+            { drug: 'Potassium Gluconate', dose: '20 mEq', frequency: 'OD', route: 'Oral' }
+          ],
+          allergies: ['None'],
+          labs: [
+            { name: 'SCr', value: '3.5', unit: 'mg/dL', reference: '0.7-1.3', is_abnormal: true },
+            { name: 'K+', value: '6.2', unit: 'mEq/L', reference: '3.5-5.0', is_abnormal: true }
+          ]
+        },
+        questions: [
+          {
+            id: 'q-014-1', case_id: 'seed-014',
+            question_text: 'What is the "Triple Whammy" causing this AKI?',
+            option_a: 'Furosemide (volume depletion) + Enalapril (efferent vasodilation) + Ibuprofen (afferent vasoconstriction)',
+            option_b: 'Three nephrotoxic antibiotics given together',
+            option_c: 'Hypokalemia + Hypocalcemia + Hyponatremia',
+            option_d: 'NSAID + Aminoglycoside + Contrast Dye',
+            correct_option: 'A',
+            pci_duty_category: 'drug_interaction',
+            question_type: 'mcq',
+            explanation_text: 'The classic Triple Whammy involves a diuretic, an NSAID, and an ACEi/ARB, severely dropping glomerular filtration pressure.',
+            subject_reference: 'Nephrology'
+          },
+          {
+            id: 'q-014-2', case_id: 'seed-014',
+            question_text: 'Given K+ 6.2 mEq/L, what immediate MAR changes are necessary?',
+            option_a: 'Hold Potassium Gluconate and Enalapril immediately.',
+            option_b: 'Increase Enalapril to improve renal flow.',
+            option_c: 'Discontinue Furosemide only.',
+            option_d: 'Start Spironolactone.',
+            correct_option: 'A',
+            pci_duty_category: 'treatment_chart_review',
+            question_type: 'mar_action',
+            target_drug: 'Potassium Gluconate',
+            explanation_text: 'ACEi and K+ supplements must be stopped immediately in hyperkalemic AKI.',
+            subject_reference: 'Nephrology'
+          }
+        ]
+      },
+      {
+        id: 'seed-014-phase-2',
+        title: 'Hour 2: Hyperkalemia Emergency',
+        description: 'ECG shows peaked T-waves. Emergency treatment required.',
+        patient_snapshot: {
+          name: 'Mohammad Ali', age: 70, sex: 'M', ward: 'Nephrology', bed: '10',
+          presenting_complaint: 'Peaked T-waves on ECG.',
+          pmh: [],
+          medications: [],
+          allergies: [],
+          labs: [
+            { name: 'K+', value: '6.5', unit: 'mEq/L', reference: '3.5-5.0', is_abnormal: true }
+          ]
+        },
+        questions: [
+          {
+            id: 'q-014-3', case_id: 'seed-014',
+            question_text: 'What is the FIRST IV medication to administer for hyperkalemia with ECG changes?',
+            option_a: 'IV Regular Insulin + Dextrose',
+            option_b: 'IV Calcium Gluconate (10%) to stabilize the cardiac membrane.',
+            option_c: 'Nebulized Salbutamol',
+            option_d: 'Oral Sodium Polystyrene Sulfonate',
+            correct_option: 'B',
+            pci_duty_category: 'drug_poison_info',
+            question_type: 'mcq',
+            explanation_text: 'Calcium directly stabilizes the myocardium, preventing fatal arrhythmias. It does not lower K+ levels.',
+            subject_reference: 'Critical Care'
+          },
+          {
+            id: 'q-014-4', case_id: 'seed-014',
+            question_text: 'Which medication shifts potassium INTO the cells to temporarily lower serum levels?',
+            option_a: 'Calcium Gluconate',
+            option_b: 'IV Regular Insulin (+ Dextrose to prevent hypoglycemia).',
+            option_c: 'Furosemide',
+            option_d: 'Patiromer',
+            correct_option: 'B',
+            pci_duty_category: 'treatment_chart_review',
+            question_type: 'mcq',
+            explanation_text: 'Insulin activates the Na+/K+ ATPase, pushing potassium intracellularly.',
+            subject_reference: 'Nephrology'
+          }
+        ]
+      },
+      {
+        id: 'seed-014-phase-3',
+        title: 'Day 5: Discharge Analgesia',
+        description: 'AKI resolved. Planning pain management for OA.',
+        patient_snapshot: {
+          name: 'Mohammad Ali', age: 70, sex: 'M', ward: 'Nephrology', bed: '10',
+          presenting_complaint: 'Needs safe OA pain relief.',
+          pmh: [],
+          medications: [],
+          allergies: [],
+          labs: [
+            { name: 'SCr', value: '1.4', unit: 'mg/dL', reference: '0.7-1.3', is_abnormal: true }
+          ]
+        },
+        questions: [
+          {
+            id: 'q-014-5', case_id: 'seed-014',
+            question_text: 'Which alternative pain medication should be recommended instead of Ibuprofen?',
+            option_a: 'Naproxen',
+            option_b: 'Celecoxib',
+            option_c: 'Paracetamol (Acetaminophen)',
+            option_d: 'Diclofenac',
+            correct_option: 'C',
+            pci_duty_category: 'patient_counselling',
+            question_type: 'mcq',
+            explanation_text: 'All NSAIDs (including COX-2s) carry renal risk. Paracetamol is the safest choice.',
+            subject_reference: 'Nephrology'
+          },
+          {
+            id: 'q-014-6', case_id: 'seed-014',
+            question_text: 'If he requires chronic management of his hyperkalemia at home, which novel K-binder could be used?',
+            option_a: 'Kayexalate',
+            option_b: 'Patiromer or Sodium Zirconium Cyclosilicate.',
+            option_c: 'Lactulose',
+            option_d: 'Sevelamer',
+            correct_option: 'B',
+            pci_duty_category: 'treatment_chart_review',
+            question_type: 'mcq',
+            explanation_text: 'Patiromer and SZC are newer, safer chronic K-binders in the GI tract.',
+            subject_reference: 'Nephrology'
+          }
+        ]
+      }
+    ],
+    study_guide: {
+      guidelines: [
+        {
+          title: 'NICE Guideline NG116 — AKI',
+          organization: 'NICE',
+          text: 'Triple Whammy (Diuretic + ACEi + NSAID) must be avoided to prevent AKI.'
+        }
+      ],
+      calculations: [],
+      reasoning: [
+        {
+          question_text: 'Why does Calcium Gluconate not lower K+?',
+          rationale: 'It only raises the action potential threshold, restoring the safety margin against arrhythmias.'
+        }
+      ],
+      mnemonics: [
+        {
+          name: 'Hyperkalemia Tx (C-B-I-G-K-D)',
+          concept: 'Stepwise management',
+          bullets: [
+            'C — Calcium Gluconate (Stabilize)',
+            'B — Bicarbonate (Shift)',
+            'I — Insulin + Dextrose (Shift)',
+            'G — Gas (Salbutamol nebulized) (Shift)',
+            'K — Kayexalate/Patiromer (Eliminate)',
+            'D — Dialysis (Eliminate)'
+          ]
+        }
+      ]
+    }
+  },
+
+  // CASE 15: ENDOCRINE / ADRs
+  {
+    id: 'seed-015',
+    title: 'Graves\' Disease & Antithyroid-Induced Agranulocytosis',
+    subject_area: 'endocrine',
+    difficulty: 'medium',
+    tags: ['Agranulocytosis', 'Carbimazole', 'Graves Disease', 'G-CSF'],
+    phases: [
+      {
+        id: 'seed-015-phase-1',
+        title: 'Day 1: Agranulocytosis Presentation',
+        description: 'Patient presents with severe sore throat and fever on Carbimazole.',
+        patient_snapshot: {
+          name: 'Sunita Patel', age: 34, sex: 'F', ward: 'Endocrinology', bed: '6',
+          presenting_complaint: 'Sore throat and fever.',
+          pmh: ['Graves Disease'],
+          medications: [
+            { drug: 'Carbimazole', dose: '20 mg', frequency: 'TDS', route: 'Oral' },
+            { drug: 'Propranolol', dose: '40 mg', frequency: 'TDS', route: 'Oral' }
+          ],
+          allergies: ['None'],
+          labs: [
+            { name: 'Temp', value: '39.0', unit: '°C', reference: '36.5-37.5', is_abnormal: true },
+            { name: 'ANC', value: '150', unit: 'cells/mm3', reference: '>1500', is_abnormal: true }
+          ]
+        },
+        questions: [
+          {
+            id: 'q-015-1', case_id: 'seed-015',
+            question_text: 'What is the most likely diagnosis?',
+            option_a: 'Viral pharyngitis',
+            option_b: 'Carbimazole-induced Agranulocytosis',
+            option_c: 'Thyroid Storm',
+            option_d: 'Propranolol toxicity',
+            correct_option: 'B',
+            pci_duty_category: 'adr_detection',
+            question_type: 'mcq',
+            explanation_text: 'Carbimazole and PTU carry a black box warning for agranulocytosis. Fever + sore throat = stop drug.',
+            subject_reference: 'Endocrinology'
+          },
+          {
+            id: 'q-015-2', case_id: 'seed-015',
+            question_text: 'What is the most appropriate MAR action regarding Carbimazole?',
+            option_a: 'Reduce dose by 50%.',
+            option_b: 'Switch to PTU.',
+            option_c: 'Stop Carbimazole immediately and permanently.',
+            option_d: 'Continue Carbimazole and add Abx.',
+            correct_option: 'C',
+            pci_duty_category: 'treatment_chart_review',
+            question_type: 'mar_action',
+            target_drug: 'Carbimazole',
+            explanation_text: 'The offending agent must be stopped. Switching to PTU is contraindicated due to cross-reactivity.',
+            subject_reference: 'Endocrinology'
+          }
+        ]
+      },
+      {
+        id: 'seed-015-phase-2',
+        title: 'Day 2: Neutropenia Care',
+        description: 'Managing the life-threatening neutropenia.',
+        patient_snapshot: {
+          name: 'Sunita Patel', age: 34, sex: 'F', ward: 'Isolation', bed: '2',
+          presenting_complaint: 'Neutropenia management.',
+          pmh: [],
+          medications: [],
+          allergies: [],
+          labs: []
+        },
+        questions: [
+          {
+            id: 'q-015-3', case_id: 'seed-015',
+            question_text: 'What immediate supportive pharmacological measures are required?',
+            option_a: 'Broad-spectrum IV antibiotics and Filgrastim (G-CSF).',
+            option_b: 'Radioactive iodine ablation.',
+            option_c: 'High-dose aspirin.',
+            option_d: 'Oral amoxicillin.',
+            correct_option: 'A',
+            pci_duty_category: 'evaluate',
+            question_type: 'mcq',
+            explanation_text: 'With an ANC of 150, IV Abx + G-CSF are required to prevent fatal sepsis and accelerate neutrophil recovery.',
+            subject_reference: 'Endocrinology'
+          },
+          {
+            id: 'q-015-4', case_id: 'seed-015',
+            question_text: 'How should her hyperthyroid symptoms be managed while ATDs are held?',
+            option_a: 'Levothyroxine',
+            option_b: 'Continue Propranolol for symptom control; use Lugol\'s iodine short-term.',
+            option_c: 'Restart Carbimazole at a lower dose.',
+            option_d: 'Amiodarone',
+            correct_option: 'B',
+            pci_duty_category: 'treatment_chart_review',
+            question_type: 'mcq',
+            explanation_text: 'Propranolol controls sympathetic symptoms. Iodine temporarily blocks thyroid release.',
+            subject_reference: 'Endocrinology'
+          }
+        ]
+      },
+      {
+        id: 'seed-015-phase-3',
+        title: 'Day 10: Definitive Therapy',
+        description: 'ANC recovered. Planning definitive hyperthyroid treatment.',
+        patient_snapshot: {
+          name: 'Sunita Patel', age: 34, sex: 'F', ward: 'Endocrinology', bed: '6',
+          presenting_complaint: 'Planning next steps.',
+          pmh: [],
+          medications: [],
+          allergies: [],
+          labs: [
+            { name: 'ANC', value: '2500', unit: 'cells/mm3', reference: '>1500', is_abnormal: false }
+          ]
+        },
+        questions: [
+          {
+            id: 'q-015-5', case_id: 'seed-015',
+            question_text: 'Since she can never take ATDs again, what is the definitive treatment?',
+            option_a: 'Lifelong Propranolol.',
+            option_b: 'Radioactive Iodine (I-131) ablation or Thyroidectomy.',
+            option_c: 'Prednisone.',
+            option_d: 'Restart PTU.',
+            correct_option: 'B',
+            pci_duty_category: 'patient_counselling',
+            question_type: 'mcq',
+            explanation_text: 'Ablation or surgery are the only definitive cures once ATDs are permanently contraindicated.',
+            subject_reference: 'Endocrinology'
+          },
+          {
+            id: 'q-015-6', case_id: 'seed-015',
+            question_text: 'If she undergoes I-131 ablation, what lifelong medication will she likely require?',
+            option_a: 'Carbimazole',
+            option_b: 'Levothyroxine (for resulting hypothyroidism)',
+            option_c: 'Prednisone',
+            option_d: 'Propranolol',
+            correct_option: 'B',
+            pci_duty_category: 'patient_counselling',
+            question_type: 'mcq',
+            explanation_text: 'I-131 destroys the thyroid gland, leading to permanent hypothyroidism requiring lifelong Levothyroxine replacement.',
+            subject_reference: 'Endocrinology'
+          }
+        ]
+      }
+    ],
+    study_guide: {
+      guidelines: [
+        {
+          title: 'ATA Guidelines for Graves Disease',
+          organization: 'ATA',
+          text: 'Agranulocytosis is a black box warning for ATDs. Cross-reactivity between Methimazole/Carbimazole and PTU is ~50%. Never re-challenge.'
+        }
+      ],
+      calculations: [],
+      reasoning: [
+        {
+          question_text: 'Why does Propranolol help?',
+          rationale: 'Blocks beta-receptors upregulated by thyroid hormones, stopping tachycardia and tremor. Also weakly inhibits peripheral T4 to T3 conversion.'
+        }
+      ],
+      mnemonics: [
+        {
+          name: 'ATD ADRs (A-T-H-E-N-A)',
+          concept: 'Side effects of ATDs',
+          bullets: [
+            'A — Agranulocytosis',
+            'T — Teratogenicity (Methimazole Q1)',
+            'H — Hepatotoxicity (PTU)',
+            'E — Embryopathy',
+            'N — Neutropenia',
+            'A — Arthralgia/Rash'
+          ]
+        }
+      ]
+    }
   },
 
   // CASE 16: TOXICOLOGY / OBSTETRICS
@@ -2962,93 +5683,44 @@ export const seedCases: ClinicalCase[] = [
     title: 'Preeclampsia & Seizure Prophylaxis',
     subject_area: 'clinical_toxicology',
     difficulty: 'medium',
-    patient_snapshot: {
-      name: 'Aisha Khan',
-      age: 26,
-      sex: 'F',
-      ward: 'Obstetrics/Gynecology',
-      bed: '1',
-      presenting_complaint: 'Severe headache, visual disturbances, and right upper quadrant pain at 36 weeks gestation. BP 170/110. Diagnosed with severe preeclampsia.',
-      pmh: ['Primigravida'],
-      medications: [
-        { drug: 'Labetalol', dose: '200 mg', frequency: 'BD', route: 'Oral' },
-        { drug: 'Magnesium Sulfate', dose: '4g load, then 2g/hr', frequency: 'Continuous', route: 'IV' }
-      ],
-      allergies: ['None'],
-      labs: [
-        { name: 'BP', value: '170/110', unit: 'mmHg', reference: '<140/90', is_abnormal: true },
-        { name: 'Urine Protein', value: '3+', unit: '', reference: 'Negative', is_abnormal: true },
-        { name: 'DTRs', value: 'Absent', unit: '', reference: '2+', is_abnormal: true },
-        { name: 'Respiratory Rate', value: '10', unit: 'bpm', reference: '12-20', is_abnormal: true }
-      ]
-    },
-    questions: [
-      {
-        id: 'q-016-1', case_id: 'seed-016',
-        question_text: 'The patient has absent deep tendon reflexes (DTRs) and a respiratory rate of 10. What do these signs indicate?',
-        option_a: 'Eclampsia onset',
-        option_b: 'Magnesium Sulfate toxicity',
-        option_c: 'Normal response to Labetalol',
-        option_d: 'HELLP syndrome',
-        correct_option: 'B',
-        pci_duty_category: 'adr_detection',
-        question_type: 'mcq',
-        explanation_text: 'Loss of DTRs is the first sign of magnesium toxicity, followed by respiratory depression (<12 breaths/min) and cardiac arrest.',
-        subject_reference: 'Obstetrics'
-      },
-      {
-        id: 'q-016-2', case_id: 'seed-016',
-        question_text: 'What is the immediate pharmacological antidote that must be administered?',
-        option_a: 'Calcium Gluconate 10% IV',
-        option_b: 'Flumazenil IV',
-        option_c: 'Naloxone IV',
-        option_d: 'Potassium Chloride IV',
-        correct_option: 'A',
-        pci_duty_category: 'drug_poison_info',
-        question_type: 'mcq',
-        explanation_text: 'Calcium gluconate (or calcium chloride) is the specific antidote for magnesium sulfate toxicity.',
-        subject_reference: 'Obstetrics'
-      },
-      {
-        id: 'q-016-3', case_id: 'seed-016',
-        question_text: 'Which parameter is critical to monitor during Magnesium Sulfate infusion to prevent toxicity?',
-        option_a: 'Urine output (must be >30 mL/hr)',
-        option_b: 'Blood glucose',
-        option_c: 'Liver enzymes',
-        option_d: 'White blood cell count',
-        correct_option: 'A',
-        pci_duty_category: 'drug_therapy_monitoring',
-        question_type: 'mcq',
-        explanation_text: 'Magnesium is excreted exclusively by the kidneys. Oliguria (<30 mL/hr) leads to rapid accumulation and toxicity.',
-        subject_reference: 'Obstetrics'
-      }
-    ],
+    tags: ['Preeclampsia', 'Magnesium Sulfate', 'Calcium Gluconate', 'Labetalol'],
     phases: [
       {
         id: 'seed-016-phase-1',
-        title: 'Day 1: Preeclampsia MgSO4 Toxicity',
-        description: 'Patient on MgSO4 develops respiratory depression.',
+        title: 'Hour 2: Toxicity Recognition',
+        description: 'Patient on MgSO4 develops respiratory depression and absent reflexes.',
         patient_snapshot: {
-          name: 'Aisha Khan',
-          age: 26,
-          sex: 'F',
-          ward: 'Obstetrics/Gynecology',
-          bed: '1',
-          presenting_complaint: 'Severe preeclampsia.',
-          pmh: ['Primigravida'],
+          name: 'Aisha Khan', age: 26, sex: 'F', ward: 'Obstetrics', bed: '1',
+          presenting_complaint: 'Severe preeclampsia. Now lethargic.',
+          pmh: ['Primigravida (36 wks)'],
           medications: [
+            { drug: 'Labetalol', dose: '200 mg', frequency: 'BD', route: 'Oral' },
             { drug: 'Magnesium Sulfate', dose: '2g/hr', frequency: 'Continuous', route: 'IV' }
           ],
           allergies: ['None'],
           labs: [
+            { name: 'BP', value: '170/110', unit: 'mmHg', reference: '<140/90', is_abnormal: true },
             { name: 'DTRs', value: 'Absent', unit: '', reference: '2+', is_abnormal: true },
             { name: 'Respiratory Rate', value: '10', unit: 'bpm', reference: '12-20', is_abnormal: true }
           ]
         },
         questions: [
           {
+            id: 'q-016-1', case_id: 'seed-016',
+            question_text: 'Absent deep tendon reflexes (DTRs) and RR of 10 indicate what?',
+            option_a: 'Eclampsia onset',
+            option_b: 'Magnesium Sulfate toxicity',
+            option_c: 'Normal response',
+            option_d: 'HELLP syndrome',
+            correct_option: 'B',
+            pci_duty_category: 'adr_detection',
+            question_type: 'mcq',
+            explanation_text: 'Loss of DTRs is the first sign of Mg toxicity, followed by respiratory depression.',
+            subject_reference: 'Obstetrics'
+          },
+          {
             id: 'q-016-2', case_id: 'seed-016',
-            question_text: 'What is the immediate pharmacological antidote that must be administered?',
+            question_text: 'What is the immediate pharmacological antidote?',
             option_a: 'Calcium Gluconate 10% IV',
             option_b: 'Flumazenil IV',
             option_c: 'Naloxone IV',
@@ -3056,7 +5728,93 @@ export const seedCases: ClinicalCase[] = [
             correct_option: 'A',
             pci_duty_category: 'drug_poison_info',
             question_type: 'mcq',
-            explanation_text: 'Calcium gluconate is the antidote for magnesium toxicity.',
+            explanation_text: 'Calcium directly antagonizes magnesium at the neuromuscular junction.',
+            subject_reference: 'Obstetrics'
+          }
+        ]
+      },
+      {
+        id: 'seed-016-phase-2',
+        title: 'Hour 4: Dose Adjustment',
+        description: 'Toxicity reversed. Reviewing why MgSO4 accumulated.',
+        patient_snapshot: {
+          name: 'Aisha Khan', age: 26, sex: 'F', ward: 'Obstetrics', bed: '1',
+          presenting_complaint: 'Recovering. Adjusting MgSO4.',
+          pmh: [],
+          medications: [],
+          allergies: [],
+          labs: [
+            { name: 'Urine Output', value: '15', unit: 'mL/hr', reference: '>30', is_abnormal: true }
+          ]
+        },
+        questions: [
+          {
+            id: 'q-016-3', case_id: 'seed-016',
+            question_text: 'Which parameter is critical to monitor during MgSO4 infusion to prevent toxicity?',
+            option_a: 'Urine output (must be >30 mL/hr)',
+            option_b: 'Blood glucose',
+            option_c: 'Liver enzymes',
+            option_d: 'WBC',
+            correct_option: 'A',
+            pci_duty_category: 'drug_therapy_monitoring',
+            question_type: 'mcq',
+            explanation_text: 'Mg is excreted exclusively by the kidneys. Oliguria leads to rapid accumulation and toxicity.',
+            subject_reference: 'Obstetrics'
+          },
+          {
+            id: 'q-016-4', case_id: 'seed-016',
+            question_text: 'What is the ultimate cure for severe preeclampsia?',
+            option_a: 'High-dose Labetalol',
+            option_b: 'Delivery of the fetus and placenta',
+            option_c: 'Magnesium Sulfate',
+            option_d: 'Bed rest',
+            correct_option: 'B',
+            pci_duty_category: 'evaluate',
+            question_type: 'mcq',
+            explanation_text: 'Medications only prevent seizures/strokes; delivery is the only definitive cure.',
+            subject_reference: 'Obstetrics'
+          }
+        ]
+      },
+      {
+        id: 'seed-016-phase-3',
+        title: 'Discharge & Contraception',
+        description: 'Post-delivery BP management.',
+        patient_snapshot: {
+          name: 'Aisha Khan', age: 26, sex: 'F', ward: 'Obstetrics', bed: '1',
+          presenting_complaint: 'BP still 150/95 post-delivery.',
+          pmh: [],
+          medications: [
+            { drug: 'Labetalol', dose: '200 mg', frequency: 'BD', route: 'Oral' }
+          ],
+          allergies: [],
+          labs: []
+        },
+        questions: [
+          {
+            id: 'q-016-5', case_id: 'seed-016',
+            question_text: 'Which antihypertensive class is absolutely CONTRAINDICATED in pregnancy/breastfeeding?',
+            option_a: 'Beta-blockers',
+            option_b: 'ACE Inhibitors / ARBs',
+            option_c: 'Calcium Channel Blockers',
+            option_d: 'Methyldopa',
+            correct_option: 'B',
+            pci_duty_category: 'patient_counselling',
+            question_type: 'mcq',
+            explanation_text: 'ACEi/ARBs cause severe fetal renal dysgenesis (oligohydramnios) and are contraindicated.',
+            subject_reference: 'Obstetrics'
+          },
+          {
+            id: 'q-016-6', case_id: 'seed-016',
+            question_text: 'When can MgSO4 be safely discontinued?',
+            option_a: 'Immediately after delivery.',
+            option_b: '24 hours post-delivery, as eclampsia risk remains high.',
+            option_c: '7 days post-delivery.',
+            option_d: 'When BP normalizes.',
+            correct_option: 'B',
+            pci_duty_category: 'treatment_chart_review',
+            question_type: 'mcq',
+            explanation_text: 'Seizure risk persists into the postpartum period; prophylaxis continues for 24h.',
             subject_reference: 'Obstetrics'
           }
         ]
@@ -3065,150 +5823,49 @@ export const seedCases: ClinicalCase[] = [
     study_guide: {
       guidelines: [
         {
-          title: 'ACOG Practice Bulletin No. 222 — Gestational Hypertension and Preeclampsia (2020)',
+          title: 'ACOG Practice Bulletin 222 (2020)',
           organization: 'ACOG',
-          text: 'PREECLAMPSIA DIAGNOSIS: BP ≥140/90 mmHg on 2 occasions ≥4h apart AFTER 20 weeks gestation + proteinuria (≥300 mg/24h, protein:creatinine ratio ≥0.3, or ≥2+ dipstick) OR any severe feature (BP ≥160/110, thrombocytopenia <100,000, impaired liver function, progressive renal insufficiency, pulmonary edema, new-onset headache, visual disturbances). MAGNESIUM SULFATE FOR SEIZURE PROPHYLAXIS: Indicated for ALL preeclampsia with severe features. Loading dose: 4-6g IV over 20-30 min. Maintenance: 1-2g/h continuous infusion. Continue for 24h AFTER delivery (eclampsia can occur post-delivery). DELIVERY: Recommended at ≥34 weeks with severe features. If <34 weeks, consider corticosteroids (Betamethasone 12 mg IM Q24H × 2 doses) for fetal lung maturity if expectant management planned.'
-        },
-        {
-          title: 'Magnesium Sulfate — Monitoring Protocol and Toxicity Management',
-          organization: 'WHO / NICE Guideline NG133',
-          text: 'MONITORING before each MgSO4 dose/per hour: (1) Deep Tendon Reflexes (DTR — patellar reflex) must be PRESENT. Loss of DTR is FIRST sign of toxicity (at serum Mg 7-10 mEq/L = 1.75-2.5 mmol/L). (2) Respiratory rate MUST be ≥12/min. Respiratory depression at Mg >12 mEq/L. (3) Urine output MUST be ≥25-30 mL/h (Mg is RENALLY CLEARED — oliguria → accumulation → toxicity). SIGNS OF MAGNESIUM TOXICITY BY LEVEL: ~4 mEq/L: Flushing, nausea (therapeutic range 4-7 mEq/L); ~7-10: Loss of DTR; ~10-13: Respiratory paralysis; ~15-17: Cardiac arrest. ANTIDOTE: Calcium Gluconate 10% (10 mL = 1g) IV over 3 minutes — DIRECTLY antagonizes Mg at calcium channels. Replenish immediately. Keep Calcium Gluconate bedside at ALL times during MgSO4 infusion. Discontinue MgSO4 immediately if respiratory rate <12 or DTR absent. Give O2 and prepare for intubation.'
-        },
-        {
-          title: 'Antihypertensive Drug Safety in Pregnancy — Safe and Contraindicated Agents',
-          organization: 'ACOG / ESC Guidelines on Hypertension in Pregnancy',
-          text: 'SAFE antihypertensives in pregnancy: (1) Methyldopa (first-choice chronic management, most evidence, safe in all trimesters, FDA C); (2) Labetalol IV or oral (for acute/chronic, FDA C); (3) Hydralazine IV (for acute severe HTN); (4) Nifedipine immediate-release oral (first-line oral for acute severe HTN, 10 mg given and repeated every 20 min, max 50 mg/session); (5) Amlodipine oral (chronic, FDA C). CONTRAINDICATED IN PREGNANCY: ACE Inhibitors (Captopril, Enalapril, Lisinopril) and ARBs — ABSOLUTELY CONTRAINDICATED in Q2-3 (renal tubular dysgenesis, oligohydramnios, neonatal renal failure, skull hypoplasia = FDA D/X). Nitroprusside — cyanide toxicity to fetus (CN crosses placenta). Spironolactone — anti-androgenic effects on male fetus. Chlorothiazide — neonatal hyponatremia, thrombocytopenia.'
+          text: 'MgSO4 indicated for severe features. Monitor DTRs, RR, and UO hourly. Calcium Gluconate is the antidote.'
         }
       ],
-      calculations: [
-        {
-          name: 'MgSO4 Infusion Rate Calculation for Nisha',
-          formula: 'Rate (mL/h) = [Desired dose (g/h) × Total bag volume (mL)] / Total MgSO4 in bag (g)',
-          explanation: 'Standard preparation: MgSO4 20g (40 mL of 50% solution) in 460 mL Normal Saline = 20g in 500 mL. Maintenance dose = 2g/h. Rate = [2 × 500] / 20 = 50 mL/h. Loading dose: 4g in 100 mL NS over 20 min = [4/20] × 500 × (60/20) = 150 mL/h for 20 minutes. MgSO4 50% concentration: 1 mL = 0.5g = 4 mEq. Therapeutic serum level target: 4-7 mEq/L (2-3.5 mmol/L). Clinical monitoring must replace serum level monitoring in resource-limited settings.'
-        },
-        {
-          name: 'Nisha\'s Preeclampsia Severity Assessment — HELLP Syndrome Criteria',
-          formula: 'HELLP = Hemolysis (LDH>600, bilirubin>1.2) + Elevated Liver enzymes (AST/ALT>2×ULN = >70-80 U/L) + Low Platelets (<100,000)',
-          explanation: 'Nisha\'s labs: Platelets 110,000 (<150k, borderline), AST 62 (>40, mildly elevated). Bilirubin not reported. LDH not reported. Partial HELLP criteria met. Full HELLP (platelets <100k + AST >70 + LDH >600) warrants immediate delivery regardless of gestational age. Even partial HELLP at 34 weeks warrants delivery. HELLP carries maternal mortality 1-3% and perinatal mortality 7-34%. Immediate management: MgSO4 for seizure prophylaxis, antihypertensives, and preparation for delivery.'
-        }
-      ],
+      calculations: [],
       reasoning: [
         {
-          question_text: 'Why is Magnesium Sulfate superior to Phenytoin and Diazepam for eclampsia seizure prophylaxis?',
-          rationale: 'The MAGPIE Trial (Lancet 2002, n=10,141) definitively established MgSO4 as the drug of choice for eclampsia: 58% reduction in eclamptic seizures vs placebo. Phenytoin comparison (Collaborative Eclampsia Trial 1995): MgSO4 reduced eclampsia recurrence by 52% vs Phenytoin AND reduced maternal mortality. Mechanism of MgSO4: (1) Blocks NMDA (N-methyl-D-aspartate) glutamate receptors in the cerebral cortex, reducing neuronal excitability and seizure threshold; (2) Cerebral vasodilation — reduces cerebrovascular spasm that causes cerebral ischemia and edema; (3) Inhibits platelet aggregation (reduces thromboxane A2). Phenytoin fails because eclamptic seizures are not typical epileptic events — they are vascular/ischemic in origin and do not respond to sodium channel blockade. Diazepam can cause neonatal respiratory depression and impairs suck reflex.'
-        },
-        {
-          question_text: 'Why are ACE inhibitors absolutely contraindicated in pregnancy (especially second and third trimesters)?',
-          rationale: 'ACE inhibitors block angiotensin II formation. During fetal kidney development (begins at week 10, most active in Q2-3), angiotensin II is CRITICAL for: (1) Renal arteriolar development — Ang II maintains perfusion pressure across developing glomeruli; (2) Tubular function maturation; (3) Amniotic fluid production (via fetal urination). ACEi blockade of Ang II in Q2-3 causes: RENAL TUBULAR DYSGENESIS (absent proximal convoluted tubules), OLIGOHYDRAMNIOS (reduced fetal urine output causing markedly reduced amniotic fluid), ANURIA, neonatal renal failure, PULMONARY HYPOPLASIA (from oligohydramnios — insufficient amniotic fluid for lung expansion), LIMB CONTRACTURES, and CALVARIAL HYPOPLASIA (incomplete skull ossification from reduced amniotic pressure). This constellation is called ACE Inhibitor Fetopathy. ALL women of childbearing age on ACEi must be counseled about contraception or immediate drug switching if pregnancy occurs.'
-        },
-        {
-          question_text: 'What is the correct sequence of management when a patient on MgSO4 develops respiratory arrest?',
-          rationale: 'IMMEDIATE ACTION SEQUENCE: (1) STOP MgSO4 infusion immediately (takes 5 seconds); (2) GIVE Calcium Gluconate 10%: 10 mL (1g) IV over 3 minutes — this directly antagonizes magnesium at voltage-gated calcium channels on the neuromuscular junction AND cardiac membranes. Effect seen within 1-2 minutes; (3) AIRWAY: Bag-mask ventilation with high-flow O2; (4) If no response to calcium within 3-5 minutes: prepare for emergency intubation (RSI with Rocuronium — avoid Succinylcholine which causes hyperkalemia in muscle breakdown); (5) Call anesthesiology and obstetrics SIMULTANEOUSLY; (6) Monitor serum magnesium level — aim to reduce below 7 mEq/L. Calcium gluconate may need to be repeated. In facilities where serum Mg cannot be measured, clinical monitoring (DTR, RR, UO) is the gold standard.'
+          question_text: 'Why MgSO4 over Phenytoin?',
+          rationale: 'MgSO4 blocks NMDA receptors and causes cerebral vasodilation, specifically targeting the ischemic pathophysiology of eclampsia.'
         }
       ],
       mnemonics: [
         {
-          name: 'Preeclampsia with Severe Features (P-R-E-E-C-L-A-M-P-S-I-A)',
-          concept: 'Criteria for severe preeclampsia — any ONE of these = MgSO4 prophylaxis indicated',
+          name: 'Severe Preeclampsia (PREECLAMPSIA)',
+          concept: 'Severe features',
           bullets: [
-            'P — Proteinuria massive (>5g/24h) — NOTE: proteinuria alone no longer required for severe features in ACOG 2020',
-            'R — Renal impairment (SCr >1.1 mg/dL or doubling from baseline)',
-            'E — Epigastric/RUQ pain (hepatic swelling/capsule stretch — pre-HELLP sign)',
-            'E — Eyes/visual disturbances (scotomata, blurred vision, photophobia)',
-            'C — Creatinine rising + oliguria <500 mL/24h',
-            'L — Liver enzymes ≥2× ULN (AST/ALT >70 U/L) ± HELLP syndrome',
-            'A — Altered mental status/severe headache (unrelieved by analgesia)',
-            'M — Mg monitoring MANDATORY — check DTR, RR, UO every hour',
-            'P — Platelets <100,000/μL',
-            'S — Systolic BP ≥160 OR diastolic ≥110 mmHg (most common severe feature)',
-            'I — Intrauterine growth restriction (fetal compromised by placental ischemia)',
-            'A — Antihypertensive acute treatment: Labetalol IV 20mg bolus, may repeat every 10 min OR Nifedipine 10mg oral, repeat Q20min'
+            'P — Proteinuria/Pulmonary edema',
+            'R — Renal impairment',
+            'E — Epigastric pain',
+            'E — Eyes (visual changes)',
+            'S — SBP ≥160 or DBP ≥110'
           ]
         }
       ]
-    },
-    tags: ['preeclampsia', 'magnesium-sulfate', 'calcium-gluconate', 'labetalol', 'obstetrics'],
-    source: 'seed',
-    created_at: '2025-01-16T00:00:00Z',
+    }
   },
 
-  // CASE 17: PEDIATRIC INFECTIOUS DISEASES
+  // CASE 17: PEDIATRICS
   {
     id: 'seed-017',
-    title: 'Pediatric Neonatal Sepsis & Dosing Calculations',
+    title: 'Neonatal Sepsis & Dosing Calculations',
     subject_area: 'infectious_diseases',
     difficulty: 'medium',
-    patient_snapshot: {
-      name: 'Baby Boy Sharma',
-      age: 0.1,
-      sex: 'M',
-      ward: 'NICU',
-      bed: 'Incubator 3',
-      presenting_complaint: 'Born at 34 weeks gestation. Developed lethargy, poor feeding, and temperature instability at 48 hours of life. Suspected neonatal sepsis.',
-      pmh: ['Prematurity (34 weeks)'],
-      medications: [
-        { drug: 'Ampicillin', dose: '100 mg/kg', frequency: 'Q12H', route: 'IV' },
-        { drug: 'Gentamicin', dose: '4 mg/kg', frequency: 'Q24H', route: 'IV' }
-      ],
-      allergies: ['None'],
-      labs: [
-        { name: 'CRP', value: '45', unit: 'mg/L', reference: '<5', is_abnormal: true },
-        { name: 'Blood Culture', value: 'Pending', unit: '', reference: 'Negative', is_abnormal: false }
-      ]
-    },
-    questions: [
-      {
-        id: 'q-017-1', case_id: 'seed-017',
-        question_text: 'Why is Ampicillin specifically included in the empiric regimen for neonatal sepsis?',
-        option_a: 'To cover Pseudomonas aeruginosa',
-        option_b: 'To cover Listeria monocytogenes',
-        option_c: 'To cover Methicillin-resistant Staphylococcus aureus (MRSA)',
-        option_d: 'To cover Candida species',
-        correct_option: 'B',
-        pci_duty_category: 'treatment_chart_review',
-        question_type: 'mcq',
-        explanation_text: 'Ampicillin covers Listeria monocytogenes and Group B Streptococcus, which are common and deadly pathogens in neonatal sepsis.',
-        subject_reference: 'Pediatrics'
-      },
-      {
-        id: 'q-017-2', case_id: 'seed-017',
-        question_text: 'What is the rationale for extended-interval (once daily) dosing of Gentamicin in neonates?',
-        option_a: 'Neonates have faster renal clearance',
-        option_b: 'It takes advantage of concentration-dependent killing and post-antibiotic effect while minimizing nephrotoxicity',
-        option_c: 'Neonates cannot tolerate IV fluids',
-        option_d: 'It prevents grey baby syndrome',
-        correct_option: 'B',
-        pci_duty_category: 'drug_therapy_monitoring',
-        question_type: 'mcq',
-        explanation_text: 'Aminoglycosides have concentration-dependent killing. High peaks maximize efficacy, while extended intervals allow troughs to drop safely, minimizing nephrotoxicity and ototoxicity.',
-        subject_reference: 'Pediatrics'
-      },
-      {
-        id: 'q-017-3', case_id: 'seed-017',
-        question_text: 'Which drug causes "Grey Baby Syndrome" if used inappropriately in neonates?',
-        option_a: 'Gentamicin',
-        option_b: 'Ampicillin',
-        option_c: 'Chloramphenicol',
-        option_d: 'Ceftriaxone',
-        correct_option: 'C',
-        pci_duty_category: 'adr_detection',
-        question_type: 'mcq',
-        explanation_text: 'Chloramphenicol causes Grey Baby Syndrome due to the lack of hepatic glucuronidation capacity in neonates.',
-        subject_reference: 'Pediatrics'
-      }
-    ],
+    tags: ['Neonatal Sepsis', 'Ampicillin', 'Gentamicin', 'Ceftriaxone Contraindication'],
     phases: [
       {
         id: 'seed-017-phase-1',
-        title: 'Day 1: Neonatal Sepsis',
-        description: 'Empiric antibiotics started for neonatal sepsis.',
+        title: 'Day 1: Empiric Antibiotics',
+        description: 'Baby born at 34 weeks develops sepsis. Starting empiric Abx.',
         patient_snapshot: {
-          name: 'Baby Boy Sharma',
-          age: 0.1,
-          sex: 'M',
-          ward: 'NICU',
-          bed: 'Incubator 3',
-          presenting_complaint: 'Lethargy and temperature instability.',
+          name: 'Baby Boy Sharma', age: 0.1, sex: 'M', ward: 'NICU', bed: '3',
+          presenting_complaint: 'Lethargy, poor feeding, Temp 35.5°C.',
           pmh: ['Prematurity (34 weeks)'],
           medications: [
             { drug: 'Ampicillin', dose: '100 mg/kg', frequency: 'Q12H', route: 'IV' },
@@ -3222,354 +5879,112 @@ export const seedCases: ClinicalCase[] = [
         questions: [
           {
             id: 'q-017-1', case_id: 'seed-017',
-            question_text: 'Why is Ampicillin specifically included in the empiric regimen for neonatal sepsis?',
-            option_a: 'To cover Pseudomonas aeruginosa',
-            option_b: 'To cover Listeria monocytogenes',
-            option_c: 'To cover MRSA',
-            option_d: 'To cover Candida species',
+            question_text: 'Why is Ampicillin included in the empiric regimen for neonatal sepsis?',
+            option_a: 'To cover Pseudomonas.',
+            option_b: 'To cover Listeria monocytogenes and Group B Strep.',
+            option_c: 'To cover MRSA.',
+            option_d: 'To cover Candida.',
             correct_option: 'B',
             pci_duty_category: 'treatment_chart_review',
             question_type: 'mcq',
-            explanation_text: 'Ampicillin covers Listeria monocytogenes.',
+            explanation_text: 'Ampicillin specifically targets Listeria and GBS, common deadly neonatal pathogens.',
             subject_reference: 'Pediatrics'
-          }
-        ]
-      }
-    ],
-    study_guide: {
-      guidelines: [
-        {
-          title: 'NICE Guideline NG195 — Neonatal Infection: Antibiotics for Prevention and Treatment (2021)',
-          organization: 'NICE',
-          text: 'Early-onset neonatal infection (EONI) occurs within 72 hours of birth, usually from maternal organisms (Group B Streptococcus, E. coli, Listeria). EMPIRIC THERAPY: Benzylpenicillin (or Ampicillin) + Gentamicin. Ampicillin: 100-200 mg/kg/day divided Q12H (Term neonate ≤7 days). Gentamicin: 4-5 mg/kg IV Q24H (Term ≥36 weeks). Ceftriaxone ABSOLUTELY CONTRAINDICATED in neonates: (1) Displaces bilirubin from albumin → kernicterus; (2) Forms calcium precipitates in neonatal vasculature when administered with calcium-containing fluids (TPN, Ringer\'s Lactate) → fatal intravascular/pulmonary precipitates. Duration: 48-72 hours until cultures are negative; 7-10 days if cultures positive. TDM for Gentamicin: Trough drawn BEFORE 3rd dose; target <1 mcg/mL. Extended dosing intervals required in neonates due to immature GFR (half-life 4-8h vs 2h adults).'
-        },
-        {
-          title: 'WHO Guidelines — Neonatal Sepsis Management in Low-Resource Settings (2015)',
-          organization: 'WHO',
-          text: 'SIGNS OF NEONATAL SEPSIS (any one warrants immediate treatment): Temperature instability (T>38°C or <36°C), Respiratory distress (grunting, nasal flaring, apnea), Poor feeding, Lethargy/Hypotonia, Jaundice within first 24h, Abdominal distension, Bulging fontanelle. FLUIDS: Neonates should NOT receive boluses routinely. Maintenance fluids: D10W at 60-80 mL/kg/day on day 1 increasing to 120-150 mL/kg/day by day 3-5 (to match physiological needs and prevent hypoglycemia). IV Glucose 10% (D10W) is the standard — NOT Dextrose 5% (hypoglycemia risk) or Normal Saline (hypernatremia risk in neonates). Monitoring: Blood glucose Q3-4H, Electrolytes daily, CBC + CRP at 24h and 48-72h. Avoid gentamicin > 7 days without TDM.'
-        },
-        {
-          title: 'AAP Clinical Guidelines — Aminoglycoside TDM in Neonates (2012)',
-          organization: 'American Academy of Pediatrics (AAP)',
-          text: 'Gentamicin TDM is MANDATORY in neonates: (1) Trough: Draw immediately BEFORE the 3rd dose (after pseudo-steady state). Target: <1 mcg/mL (prophylaxis) or <0.5 mcg/mL (if renal impairment). Trough >2 mcg/mL = HOLD next dose. (2) Peak: Draw 30 min AFTER end of 30-min infusion. Target: 5-10 mcg/mL. Peak reflects efficacy (concentration-dependent killing, AUC:MIC goal >70-100 mg•h/L). EXTENDED INTERVAL DOSING (once daily) preferred in neonates: maximizes peak:MIC ratio and provides antibiotic-free period (reduces adaptive resistance and nephrotoxicity). If SCr elevated for age (>0.7 mg/dL in term neonate) → extend interval to Q36-48H and check trough before each dose. Ototoxicity monitoring: Brainstem auditory evoked response (BAER) testing at discharge.'
-        }
-      ],
-      calculations: [
-        {
-          name: 'Antibiotic Dose Calculation for 3.2 kg Term Neonate',
-          formula: 'Ampicillin: 100 mg/kg/day × wt(kg) ÷ 2 (for Q12H). Gentamicin: 4 mg/kg/day × wt(kg) for Q24H',
-          explanation: 'Baby of Sunita (3.2 kg): Ampicillin = 100 mg/kg/day × 3.2 kg = 320 mg/day ÷ 2 = 160 mg IV Q12H. Gentamicin = 4 mg/kg × 3.2 = 12.8 mg IV Q24H. Infusion: Dilute Ampicillin in 10 mL NS, infuse over 30 minutes. Dilute Gentamicin 12.8 mg in 5 mL NS, infuse over 30 minutes. TDM: Draw Gentamicin trough before dose 3 (at ~48h). If trough <1 mcg/mL: continue Q24H. If 1-2: extend to Q36H. If >2: HOLD and recheck SCr.'
-        },
-        {
-          name: 'Holliday-Segar Maintenance Fluid Calculation for Neonates',
-          formula: 'Day 1: 60-80 mL/kg/day. Day 2: 80-100 mL/kg/day. Day 3+: 100-150 mL/kg/day. Rate = Total daily volume/24',
-          explanation: '3.2 kg neonate on Day 1: 80 mL/kg × 3.2 = 256 mL/day = 10.7 mL/h of D10W. This provides maintenance calories as glucose (10% dextrose) and prevents hypoglycemia in a neonate who cannot tolerate enteral feeds. Monitor blood glucose: if <45 mg/dL (2.5 mmol/L) = hypoglycemia → increase GIR (Glucose Infusion Rate) or give rescue glucose bolus (2 mL/kg of D10W over 5 minutes). Electrolytes added to maintenance from Day 2-3: NaCl 2-3 mEq/kg/day and KCl 1-2 mEq/kg/day when urine output established.'
-        }
-      ],
-      reasoning: [
-        {
-          question_text: 'Why is Ceftriaxone contraindicated in neonates, especially those receiving calcium-containing fluids?',
-          rationale: 'Ceftriaxone is a third-generation cephalosporin with HIGH PROTEIN BINDING (85-95% albumin-bound). In neonates, albumin concentrations are low (2.5-3.5 g/dL vs 4.0-5.0 g/dL in adults) and bilirubin concentrations are physiologically high. Ceftriaxone DISPLACES bilirubin from albumin binding sites, raising free unconjugated bilirubin. The immature neonatal blood-brain barrier allows free bilirubin to enter the brain, causing KERNICTERUS (bilirubin encephalopathy) — manifesting as opisthotonos, seizures, hearing loss, and cerebral palsy. SECOND mechanism: Ceftriaxone forms insoluble CALCIUM-CEFTRIAXONE PRECIPITATES when mixed or co-infused with calcium-containing solutions (Ringer\'s Lactate, calcium gluconate, TPN). These precipitates can cause FATAL pulmonary and renal vascular occlusion. The FDA issued a black box warning in 2009: Do NOT co-administer IV ceftriaxone with calcium-containing IV solutions in neonates.'
-        },
-        {
-          question_text: 'Why do neonates require larger mg/kg doses of aminoglycosides but LONGER dosing intervals than adults?',
-          rationale: 'Two competing pharmacokinetic factors: (1) LARGER VOLUME OF DISTRIBUTION: Neonates have 75-80% body water (vs 60% in adults) — most distributed in extracellular compartment. Aminoglycosides (hydrophilic drugs) distribute widely in ECF → require higher mg/kg doses to achieve therapeutic peak concentrations. (2) REDUCED RENAL ELIMINATION: Neonatal GFR is only 10-20 mL/min/1.73m² at birth (vs 120 mL/min in adults), due to immature glomerular development. Aminoglycosides are 100% renally eliminated → half-life is dramatically prolonged (4-8h vs 2h). The combination = LOAD HIGH (for peak) but EXTEND INTERVAL (for trough) — this maximizes the concentration-dependent bactericidal effect (peak:MIC ratio) while allowing complete drug elimination before the next dose, preventing accumulation and toxicity.'
-        },
-        {
-          question_text: 'What is the significance of PROM (Prolonged Rupture of Membranes) as a risk factor for neonatal sepsis?',
-          rationale: 'The amniotic membrane is a physical barrier protecting the fetus from ascending vaginal/cervical bacteria. When membranes rupture >18-24 hours before delivery (PROM), this barrier is lost. Vaginal organisms — particularly Group B Streptococcus (GBS), E. coli, Listeria monocytogenes, and Ureaplasma — can ascend into the amniotic fluid and colonize the fetus. Risk increases with duration of rupture: 18-24h rupture = 1% sepsis risk; >24h = 3-5% risk. Maternal fever during labor + PROM = particularly high risk (chorioamnionitis). Maternal GBS status (vaginal swab at 35-37 weeks) is critical — GBS-positive + PROM = neonatal prophylaxis with IV Penicillin G intrapartum, and early empiric treatment of the neonate regardless of symptoms.'
-        }
-      ],
-      mnemonics: [
-        {
-          name: 'Neonatal Sepsis Clinical Signs (B-A-B-Y-S-E-P-S-I-S)',
-          concept: 'Early recognition of neonatal sepsis — time-critical, symptoms are non-specific',
-          bullets: [
-            'B — Breathing abnormalities: Tachypnea (RR>60), Grunting, Apnea, Nasal flaring, Retractions',
-            'A — Activity/tone change: Lethargy, hypotonia, poor feeding, reduced movements',
-            'B — Blood glucose instability: Hypoglycemia (<45 mg/dL) OR Hyperglycemia (>145 mg/dL) — both suggest stress',
-            'Y — Yellow (Jaundice): Early jaundice <24h = pathological, consider hemolysis/sepsis',
-            'S — Skin changes: Mottling, pallor, petechiae, poor capillary refill >3 seconds',
-            'E — Eye signs: Purulent discharge (gonorrheal/chlamydial ophthalmia neonatorum)',
-            'P — Perfusion issues: Tachycardia (>160 bpm) OR Bradycardia (<100 bpm) = ominous',
-            'S — Seizures: Subtle (lip-smacking, eye deviation) or tonic-clonic',
-            'I — Infection markers: CRP >10 mg/L, Procalcitonin >2 ng/mL, low WBC (<5k) or bandemia >20%',
-            'S — STOP CEFTRIAXONE: Absolutely contraindicated in neonates — use Ampicillin + Gentamicin'
-          ]
-        }
-      ]
-    },
-    tags: ['pediatrics', 'neonatal-sepsis', 'gentamicin', 'ampicillin', 'ceftriaxone-warning'],
-    source: 'seed',
-    created_at: '2025-01-17T00:00:00Z',
-  },
-
-  // CASE 18: GERIATRIC POLYPHARMACY
-  {
-    id: 'seed-018',
-    title: 'Geriatric Polypharmacy & Beers Criteria Delirium',
-    subject_area: 'community_pharmacy',
-    difficulty: 'medium',
-    patient_snapshot: {
-      name: 'Ramesh Patel',
-      age: 82,
-      sex: 'M',
-      ward: 'Geriatrics',
-      bed: '14',
-      presenting_complaint: 'Admitted after a fall at home. Experiencing acute confusion, dry mouth, urinary retention, and constipation.',
-      pmh: ['Neuropathy', 'Insomnia', 'Hypertension'],
-      medications: [
-        { drug: 'Amitriptyline', dose: '50 mg', frequency: 'ON', route: 'Oral' },
-        { drug: 'Diphenhydramine', dose: '25 mg', frequency: 'ON', route: 'Oral' },
-        { drug: 'Amlodipine', dose: '5 mg', frequency: 'OD', route: 'Oral' }
-      ],
-      allergies: ['None'],
-      labs: [
-        { name: 'Na+', value: '140', unit: 'mEq/L', reference: '135-145', is_abnormal: false }
-      ]
-    },
-    questions: [
-      {
-        id: 'q-018-1', case_id: 'seed-018',
-        question_text: 'Which tool is most appropriate for identifying potentially inappropriate medications (PIMs) in this elderly patient?',
-        option_a: 'Child-Pugh Score',
-        option_b: 'Beers Criteria',
-        option_c: 'HAS-BLED Score',
-        option_d: 'Cockcroft-Gault Equation',
-        correct_option: 'B',
-        pci_duty_category: 'treatment_chart_review',
-        question_type: 'mcq',
-        explanation_text: 'The Beers Criteria is a guideline for healthcare professionals to help improve the safety of prescribing medications for older adults.',
-        subject_reference: 'Geriatrics'
-      },
-      {
-        id: 'q-018-2', case_id: 'seed-018',
-        question_text: 'Which medications in the patient\'s profile are contributing to his high anticholinergic burden (confusion, dry mouth, urinary retention)?',
-        option_a: 'Amlodipine only',
-        option_b: 'Amitriptyline and Diphenhydramine',
-        option_c: 'None of them',
-        option_d: 'Amlodipine and Diphenhydramine',
-        correct_option: 'B',
-        pci_duty_category: 'adr_detection',
-        question_type: 'mcq',
-        explanation_text: 'Both amitriptyline (TCA) and diphenhydramine (first-gen antihistamine) have strong anticholinergic properties, highly inappropriate for the elderly.',
-        subject_reference: 'Geriatrics'
-      },
-      {
-        id: 'q-018-3', case_id: 'seed-018',
-        question_text: 'What is the recommended action for Amitriptyline in this patient?',
-        option_a: 'Increase the dose',
-        option_b: 'Switch to Nortriptyline',
-        option_c: 'Taper and discontinue',
-        option_d: 'Continue unchanged',
-        correct_option: 'C',
-        pci_duty_category: 'treatment_chart_review',
-        question_type: 'mcq',
-        explanation_text: 'Amitriptyline is highly anticholinergic and should be discontinued in elderly patients with falls and confusion.',
-        subject_reference: 'Geriatrics'
-      }
-    ],
-    phases: [
-      {
-        id: 'seed-018-phase-1',
-        title: 'Day 1: Polypharmacy Review',
-        description: 'Elderly patient with anticholinergic toxicity.',
-        patient_snapshot: {
-          name: 'Ramesh Patel',
-          age: 82,
-          sex: 'M',
-          ward: 'Geriatrics',
-          bed: '14',
-          presenting_complaint: 'Confusion, dry mouth, urinary retention.',
-          pmh: ['Neuropathy', 'Insomnia', 'Hypertension'],
-          medications: [
-            { drug: 'Amitriptyline', dose: '50 mg', frequency: 'ON', route: 'Oral' },
-            { drug: 'Diphenhydramine', dose: '25 mg', frequency: 'ON', route: 'Oral' }
-          ],
-          allergies: ['None'],
-          labs: [
-            { name: 'Na+', value: '140', unit: 'mEq/L', reference: '135-145', is_abnormal: false }
-          ]
-        },
-        questions: [
+          },
           {
-            id: 'q-018-2', case_id: 'seed-018',
-            question_text: 'Which medications in the patient\'s profile are contributing to his high anticholinergic burden?',
-            option_a: 'Amlodipine only',
-            option_b: 'Amitriptyline and Diphenhydramine',
-            option_c: 'None of them',
-            option_d: 'Amlodipine and Diphenhydramine',
+            id: 'q-017-2', case_id: 'seed-017',
+            question_text: 'Why is Ceftriaxone absolutely contraindicated in neonates?',
+            option_a: 'It causes Grey Baby Syndrome.',
+            option_b: 'It displaces bilirubin causing Kernicterus and precipitates with IV calcium.',
+            option_c: 'It causes tooth discoloration.',
+            option_d: 'It does not cross the BBB.',
             correct_option: 'B',
             pci_duty_category: 'adr_detection',
             question_type: 'mcq',
-            explanation_text: 'Both amitriptyline and diphenhydramine have strong anticholinergic properties.',
-            subject_reference: 'Geriatrics'
+            explanation_text: 'Ceftriaxone displaces bilirubin from albumin (kernicterus risk) and forms fatal precipitates with calcium-containing IV fluids.',
+            subject_reference: 'Pediatrics'
           }
         ]
-      }
-    ],
-    study_guide: {
-      guidelines: [
-        {
-          title: 'AGS Beers Criteria for Potentially Inappropriate Medication Use in Older Adults (2023 Update)',
-          organization: 'American Geriatrics Society (AGS)',
-          text: 'The Beers Criteria lists medications that should be AVOIDED or USED WITH CAUTION in adults ≥65 years due to adverse effects that outweigh benefits. Strongly Avoid in ALL older adults: (1) Tricyclic antidepressants (Amitriptyline, Doxepin, Imipramine) — highly anticholinergic, causes delirium, constipation, urinary retention, falls, QT prolongation; (2) First-generation antihistamines (Diphenhydramine, Chlorpheniramine, Promethazine) — CNS-penetrating anticholinergics that cause delirium, sedation, falls; (3) Oral antimuscarinics for incontinence (Oxybutynin, Tolterodine, Solifenacin) in patients with cognitive impairment or reduced GFR (accumulation risk); (4) Short-acting benzodiazepines (Diazepam, Lorazepam, Alprazolam) — all doses increase fall and fracture risk; (5) NSAIDs without PPI coverage — increase GI bleeding, fluid retention, and renal impairment risk. ALTERNATIVES: Sertraline/Escitalopram (for depression), Mirabegron (for overactive bladder — beta-3 agonist, no anticholinergic effects), Paracetamol (for arthritis pain, safer than NSAIDs), Melatonin/Trazodone (for insomnia).'
-        },
-        {
-          title: 'STOPP/START Criteria Version 2 — Deprescribing in the Elderly (2014)',
-          organization: 'European Geriatric Medicine Society',
-          text: 'STOPP (Screening Tool of Older Persons\' Prescriptions): Drugs to STOP in the elderly: (1) Anticholinergics with active delirium (immediate cessation, no taper needed for Oxybutynin/Diphenhydramine but TCA requires gradual taper); (2) Opioids without concurrent laxative (causes constipation and impaction); (3) NSAIDs with eGFR <50 (nephrotoxicity risk); (4) Aspirin without a clear indication (bleeding risk). START (Screening Tool to Alert to Right Treatment): Drugs to CONSIDER ADDING: (1) Laxative with any opioid (Macrogol/Senna); (2) Calcium + Vitamin D in osteoporosis; (3) Statin and antihypertensive for CV risk. Deprescribing principle: Reduce medications one at a time at monthly intervals to monitor for withdrawal or rebound effects. Amitriptyline taper: reduce by 25 mg every 2-4 weeks (rapid withdrawal causes discontinuation syndrome — nausea, sweating, electric shock sensations, rebound depression).'
-        },
-        {
-          title: 'Delirium in Hospitalized Older Adults — Non-Pharmacological Prevention Protocol',
-          organization: 'British Geriatrics Society (BGS) / NICE CG103',
-          text: 'Delirium in hospitalized elders (12-40% incidence in wards): Risk factors — age >65, cognitive impairment, acute illness, sensory impairment, dehydration, immobility, medications. PREVENTION: HELP Protocol (Hospital Elder Life Program): (1) Cognitive orientation: Clock, calendar, reality orientation; (2) Hydration: Ensure adequate fluid intake; (3) Mobilization: Get patient out of bed within 24h; (4) Vision/Hearing: Provide glasses and hearing aids; (5) Sleep hygiene: Avoid nighttime disturbance, no sedatives for sleep; (6) STOP ALL anticholinergics immediately. TREATMENT of delirium: Low-dose Haloperidol 0.5-1 mg PRN (ONLY if patient is a danger to themselves/others — NOT for routine sedation). Avoid benzodiazepines (worsen delirium) unless alcohol withdrawal. Antidote for anticholinergic toxicity: Physostigmine 1-2 mg IV slow push (in severe toxicity with dysrhythmia) — available in specialized centers.'
-        }
-      ],
-      calculations: [
-        {
-          name: 'Anticholinergic Cognitive Burden (ACB) Scale Score',
-          formula: 'ACB score: Each drug scored 1 (mild), 2 (moderate), or 3 (severe anticholinergic activity). Sum all scores; ≥3 total = significant cognitive impairment risk',
-          explanation: 'Nathuram\'s ACB Score: Amitriptyline = 3 (severe) + Oxybutynin = 3 (severe) + Diphenhydramine = 3 (severe) = TOTAL 9 points. Population studies (Gray et al., JAMA Intern Med 2015) showed ACB score ≥4 associated with 54% increased odds of dementia over 7 years. ACB ≥9 (like Nathuram\'s) represents extreme risk. Clinical manifestation: global cognitive impairment (delirium), constipation, urinary retention, dry mouth, tachycardia, and orthostatic hypotension — exactly matching Nathuram\'s presentation.'
-        },
-        {
-          name: 'Cockcroft-Gault CrCl for Nathuram (Dose Adjustment in Elderly)',
-          formula: 'CrCl = [(140 - Age) × IBW] / (72 × SCr). IBW (M) = 50 + 2.3 × (Ht inches - 60)',
-          explanation: 'Nathuram: Age 82, SCr 1.2 mg/dL, weight ~65 kg, estimated height ~165 cm (65 in). IBW = 50 + 2.3×(65-60) = 61.5 kg. CrCl = [(140-82) × 61.5] / (72 × 1.2) = [58 × 61.5] / 86.4 = 3567/86.4 = 41.3 mL/min. Despite "normal" SCr (1.2), this elderly man\'s CrCl is only 41 mL/min (CKD Stage 3a) — normal SCr in elderly is MISLEADING because of reduced muscle mass. Oxybutynin accumulates in CKD (renal elimination), worsening anticholinergic toxicity. All drug doses must be recalculated using actual CrCl, not age-based estimates.'
-        }
-      ],
-      reasoning: [
-        {
-          question_text: 'Why are the elderly disproportionately vulnerable to anticholinergic drug toxicity?',
-          rationale: 'Three age-related changes create this vulnerability: (1) NEUROLOGICAL DECLINE: Aging is associated with a 50% reduction in cholinergic neurons in the nucleus basalis of Meynert (the primary cholinergic nucleus for cortical cognition). Blocking remaining muscarinic receptors with drugs (Amitriptyline, Oxybutynin, Diphenhydramine) causes ACUTE CHOLINERGIC DEFICIT — manifesting as delirium. (2) BLOOD-BRAIN BARRIER PERMEABILITY: The BBB becomes more permeable with age, allowing more anticholinergic drug penetration into the CNS. Tertiary amines (Amitriptyline, Diphenhydramine) are lipid-soluble and pass the BBB easily — quaternary amines (Glycopyrrolate, Ipratropium) do not cross the BBB. (3) PHARMACOKINETIC CHANGES: In elderly patients, hepatic CYP450 activity decreases (reduced first-pass metabolism), renal clearance decreases (lower GFR), and albumin levels fall (more free drug). Result: Higher drug concentrations at brain receptors from the same dose that would be well-tolerated in a younger adult.'
-        },
-        {
-          question_text: 'What is Orthostatic Hypotension and why does it cause falls in this patient?',
-          rationale: 'Orthostatic Hypotension (OH) is defined as a drop in SBP ≥20 mmHg OR DBP ≥10 mmHg within 3 minutes of standing from a supine position. Nathuram\'s BP: 138/82 (lying) → 110/68 (standing) = SBP drop of 28 mmHg = confirms OH. MECHANISM in this case: (1) Amitriptyline blocks alpha-1 adrenergic receptors → prevents compensatory peripheral vasoconstriction when standing; (2) Diphenhydramine also has alpha-1 blocking properties; (3) Volume depletion (in context of poor oral intake in elderly) worsens OH. CONSEQUENCES: Cerebral hypoperfusion upon standing → lightheadedness → falls. Risk is HIGHEST in the first 30 minutes after rising from bed in the morning. MANAGEMENT: Stop causative drugs (Amitriptyline, Diphenhydramine), ensure adequate hydration, raise head of bed 10-30°, compression stockings, gradual position change.'
-        },
-        {
-          question_text: 'What is Mirabegron and why is it preferred over Oxybutynin for overactive bladder in elderly?',
-          rationale: 'Mirabegron (Betmiga) is a selective BETA-3 ADRENOCEPTOR AGONIST that relaxes the detrusor muscle (bladder wall) during the storage phase, increasing bladder capacity without blocking muscarinic receptors. Unlike Oxybutynin (antimuscarinic), Mirabegron has ZERO anticholinergic burden — it does not cause delirium, dry mouth, constipation, or urinary retention (paradoxically, it can rarely cause urinary hesitancy). Starting dose: 25 mg OD for 4 weeks, then 50 mg OD if needed. Contraindicated in: severe hypertension (SBP >180 mmHg) as it can raise BP by ~1-2 mmHg (due to beta-3 activation in vasculature — minimal effect). No dose adjustment needed for CrCl >15 mL/min. This pharmacological profile makes Mirabegron the PREFERRED first-line agent for OAB in elderly patients per Beers Criteria 2023.'
-        }
-      ],
-      mnemonics: [
-        {
-          name: 'Anticholinergic Toxidrome (Hot-Dry-Blind-Red-Mad-Tachycardic)',
-          concept: 'Classic anticholinergic toxidrome — remember the physical examination findings and treatment',
-          bullets: [
-            'Hot as a hare — Hyperthermia from reduced sweating (eccrine sweat glands are muscarinic M3-mediated)',
-            'Dry as a bone — Dry skin, dry mouth (anhidrosis, xerostomia), urinary retention, constipation (all M3 effects)',
-            'Blind as a bat — Mydriasis (dilated, non-reactive pupils) + Cycloplegia (blurred near vision)',
-            'Red as a beet — Flushing/Cutaneous vasodilation (heat cannot be dissipated without sweating)',
-            'Mad as a hatter — Delirium, agitation, hallucinations (central anticholinergic syndrome)',
-            'Tachycardic — M2 cardiac blockade → sinus tachycardia (HR typically 100-140 bpm)',
-            'TREATMENT: Stop offending drugs. Physostigmine 1-2 mg IV slow (cholinesterase inhibitor, antidote for severe CNS toxicity). Physostigmine increases ACh at synapses → reverses delirium and tachycardia. NOT benzodiazepines for agitation (worsens respiratory depression in elderly).'
-          ]
-        }
-      ]
-    },
-    tags: ['geriatrics', 'beers-criteria', 'polypharmacy', 'anticholinergic-burden', 'deprescribing'],
-    source: 'seed',
-    created_at: '2025-01-18T00:00:00Z',
-  },
-
-  // CASE 19: INFECTIOUS DISEASES / HIV
-  {
-    id: 'seed-019',
-    title: 'HIV / AIDS & Pneumocystis Pneumonia (PJP)',
-    subject_area: 'infectious_diseases',
-    difficulty: 'hard',
-    patient_snapshot: {
-      name: 'John Doe',
-      age: 40,
-      sex: 'M',
-      ward: 'Infectious Diseases',
-      bed: '2',
-      presenting_complaint: 'Progressive exertional dyspnea, dry cough, and fever for 3 weeks. Newly diagnosed with HIV.',
-      pmh: ['Newly diagnosed HIV (CD4 count 45)'],
-      medications: [
-        { drug: 'Trimethoprim-Sulfamethoxazole', dose: '15-20 mg/kg/day (TMP)', frequency: 'Divided Q6H', route: 'IV' }
-      ],
-      allergies: ['None'],
-      labs: [
-        { name: 'PaO2', value: '60', unit: 'mmHg', reference: '75-100', is_abnormal: true },
-        { name: 'CD4 Count', value: '45', unit: 'cells/mm3', reference: '500-1500', is_abnormal: true }
-      ]
-    },
-    questions: [
-      {
-        id: 'q-019-1', case_id: 'seed-019',
-        question_text: 'The patient has Pneumocystis jirovecii pneumonia (PJP) with a PaO2 of 60 mmHg. What adjunctive therapy must be added immediately?',
-        option_a: 'Azithromycin',
-        option_b: 'Corticosteroids (Prednisone 40mg BD)',
-        option_c: 'Antiretroviral therapy (ART)',
-        option_d: 'Fluconazole',
-        correct_option: 'B',
-        pci_duty_category: 'treatment_chart_review',
-        question_type: 'mcq',
-        explanation_text: 'Adjunctive corticosteroids are indicated in HIV-positive patients with severe PJP (PaO2 < 70 mmHg) to prevent worsening hypoxia from the inflammatory response to dying organisms.',
-        subject_reference: 'Infectious Diseases'
       },
       {
-        id: 'q-019-2', case_id: 'seed-019',
-        question_text: 'When should Antiretroviral Therapy (ART) be initiated for this patient?',
-        option_a: 'Immediately alongside TMP-SMX',
-        option_b: 'Within 2 weeks of starting opportunistic infection therapy',
-        option_c: 'After 6 months',
-        option_d: 'Only when CD4 > 200',
-        correct_option: 'B',
-        pci_duty_category: 'treatment_chart_review',
-        question_type: 'mcq',
-        explanation_text: 'ART is generally started within 2 weeks of initiating treatment for opportunistic infections (like PJP) to balance immune recovery with the risk of Immune Reconstitution Inflammatory Syndrome (IRIS).',
-        subject_reference: 'Infectious Diseases'
-      },
-      {
-        id: 'q-019-3', case_id: 'seed-019',
-        question_text: 'What is a major adverse effect of high-dose Trimethoprim-Sulfamethoxazole to monitor?',
-        option_a: 'Hyperkalemia and Nephrotoxicity',
-        option_b: 'Hypertension',
-        option_c: 'Constipation',
-        option_d: 'Hypoglycemia',
-        correct_option: 'A',
-        pci_duty_category: 'drug_therapy_monitoring',
-        question_type: 'mcq',
-        explanation_text: 'High-dose TMP-SMX can cause hyperkalemia (TMP acts like amiloride) and acute interstitial nephritis/crystalluria.',
-        subject_reference: 'Infectious Diseases'
-      }
-    ],
-    phases: [
-      {
-        id: 'seed-019-phase-1',
-        title: 'Day 1: PJP Pneumonia',
-        description: 'HIV patient with severe PJP and hypoxia.',
+        id: 'seed-017-phase-2',
+        title: 'Day 2: PK/PD Monitoring',
+        description: 'Monitoring Gentamicin clearance.',
         patient_snapshot: {
-          name: 'John Doe',
-          age: 40,
-          sex: 'M',
-          ward: 'Infectious Diseases',
-          bed: '2',
-          presenting_complaint: 'Dyspnea and fever.',
-          pmh: ['HIV (CD4 45)'],
-          medications: [
-            { drug: 'Trimethoprim-Sulfamethoxazole', dose: '15-20 mg/kg/day', frequency: 'Divided Q6H', route: 'IV' }
-          ],
-          allergies: ['None'],
+          name: 'Baby Boy Sharma', age: 0.1, sex: 'M', ward: 'NICU', bed: '3',
+          presenting_complaint: 'TDM check.',
+          pmh: [],
+          medications: [],
+          allergies: [],
+          labs: []
+        },
+        questions: [
+          {
+            id: 'q-017-3', case_id: 'seed-017',
+            question_text: 'What is the rationale for extended-interval (Q24H or Q36H) dosing of Gentamicin in neonates?',
+            option_a: 'Neonates have faster renal clearance.',
+            option_b: 'Maximizes concentration-dependent killing (high peak) while allowing the immature kidneys time to clear the trough, minimizing toxicity.',
+            option_c: 'Neonates cannot tolerate frequent IV fluids.',
+            option_d: 'To prevent Red Man Syndrome.',
+            correct_option: 'B',
+            pci_duty_category: 'drug_therapy_monitoring',
+            question_type: 'mcq',
+            explanation_text: 'Neonates have lower GFRs. Extending the interval ensures troughs drop below 1 mcg/mL before the next dose.',
+            subject_reference: 'Pharmacokinetics'
+          },
+          {
+            id: 'q-017-4', case_id: 'seed-017',
+            question_text: 'Which drug causes "Grey Baby Syndrome" if used inappropriately in neonates?',
+            option_a: 'Gentamicin',
+            option_b: 'Ampicillin',
+            option_c: 'Chloramphenicol',
+            option_d: 'Ceftriaxone',
+            correct_option: 'C',
+            pci_duty_category: 'adr_detection',
+            question_type: 'mcq',
+            explanation_text: 'Neonates lack UDP-glucuronyl transferase to metabolize Chloramphenicol, causing toxic accumulation and cardiovascular collapse.',
+            subject_reference: 'Pediatrics'
+          }
+        ]
+      },
+      {
+        id: 'seed-017-phase-3',
+        title: 'Day 3: Fluid Management',
+        description: 'Adjusting maintenance fluids.',
+        patient_snapshot: {
+          name: 'Baby Boy Sharma', age: 0.1, sex: 'M', ward: 'NICU', bed: '3',
+          presenting_complaint: 'Fluid adjustment.',
+          pmh: [],
+          medications: [],
+          allergies: [],
           labs: [
-            { name: 'PaO2', value: '60', unit: 'mmHg', reference: '75-100', is_abnormal: true }
+            { name: 'Blood Glucose', value: '42', unit: 'mg/dL', reference: '45-100', is_abnormal: true }
           ]
         },
         questions: [
           {
-            id: 'q-019-1', case_id: 'seed-019',
-            question_text: 'The patient has Pneumocystis jirovecii pneumonia (PJP) with a PaO2 of 60 mmHg. What adjunctive therapy must be added immediately?',
-            option_a: 'Azithromycin',
-            option_b: 'Corticosteroids (Prednisone)',
-            option_c: 'Antiretroviral therapy (ART)',
-            option_d: 'Fluconazole',
+            id: 'q-017-5', case_id: 'seed-017',
+            question_text: 'What is the preferred maintenance IV fluid for a neonate on Day 1-3?',
+            option_a: 'Normal Saline 0.9%',
+            option_b: 'Dextrose 10% in Water (D10W) to prevent hypoglycemia.',
+            option_c: 'Ringer\'s Lactate',
+            option_d: 'Dextrose 5%',
             correct_option: 'B',
             pci_duty_category: 'treatment_chart_review',
             question_type: 'mcq',
-            explanation_text: 'Corticosteroids are indicated in severe PJP to prevent worsening hypoxia.',
+            explanation_text: 'Neonates have high glucose requirements and poor glycogen stores. D10W prevents fatal hypoglycemia.',
+            subject_reference: 'Pediatrics'
+          },
+          {
+            id: 'q-017-6', case_id: 'seed-017',
+            question_text: 'If cultures return negative at 48 hours and the baby is clinically well, what is the action?',
+            option_a: 'Complete 7 days of antibiotics.',
+            option_b: 'Stop antibiotics immediately.',
+            option_c: 'Switch to oral antibiotics.',
+            option_d: 'Continue Ampicillin, stop Gentamicin.',
+            correct_option: 'B',
+            pci_duty_category: 'evaluate',
+            question_type: 'mcq',
+            explanation_text: 'Antibiotic stewardship rules dictate stopping empiric Abx at 48h if cultures are negative and symptoms resolved.',
             subject_reference: 'Infectious Diseases'
           }
         ]
@@ -3578,66 +5993,367 @@ export const seedCases: ClinicalCase[] = [
     study_guide: {
       guidelines: [
         {
-          title: 'NIH/CDC/IDSA Guidelines for Prevention and Treatment of Opportunistic Infections in HIV (2020)',
-          organization: 'NIH/CDC/IDSA',
-          text: 'PJP DIAGNOSIS: Bilateral interstitial infiltrates on CXR/CT, elevated LDH (>500 U/L), room air PaO2 <70 mmHg, CD4 <200 cells/μL, positive PCR or DFA from bronchoalveolar lavage. PJP TREATMENT: First-line: TMP-SMX (Co-trimoxazole) IV or oral. Dose: 15-20 mg/kg/day (based on TMP component) divided Q6-8H for 21 days. For MODERATE-SEVERE PJP (PaO2 <70 mmHg or A-a gradient ≥35 mmHg): MANDATORY ADJUNCTIVE CORTICOSTEROIDS within 72 hours of starting TMP-SMX — Prednisolone 40 mg BD (Days 1-5) → 40 mg OD (Days 6-10) → 20 mg OD (Days 11-21). Steroids reduce inflammatory response to dying Pneumocystis organisms, preventing worsening respiratory failure. Mortality reduction: 50% with steroids in severe PJP. Alternative for sulfa allergy: IV Pentamidine 4 mg/kg/day OR Primaquine 30 mg OD + Clindamycin 600 mg IV Q6H. PJP PROPHYLAXIS: TMP-SMX DS 1 tablet OD when CD4 <200 cells/μL (or <250 with constitutional symptoms). Primary prophylaxis continues until CD4 >200 cells/μL for ≥3 months on ART.'
-        },
-        {
-          title: 'WHO Guidelines for Antiretroviral Therapy (ART) — When to Start and Preferred Regimens (2021)',
-          organization: 'WHO',
-          text: 'WHEN TO START ART in the context of opportunistic infections: (1) For most OIs including PJP, Cryptococcal meningitis with stable: Start ART within 2 WEEKS of OI treatment initiation — ACTG A5164 trial showed this significantly reduced AIDS progression and death. (2) Exception — TB Meningitis: Delay ART 4-6 weeks (IRIS in TB meningitis is particularly severe and can be fatal — TEMPRANO trial). PREFERRED FIRST-LINE ART: TDF (Tenofovir Disoproxil Fumarate) + 3TC (Lamivudine) + DTG (Dolutegravir) — most tolerated, high barrier to resistance. Alternative if DTG not available: TDF + 3TC + EFV (Efavirenz). IMPORTANT INTERACTION: TMP-SMX + Dolutegravir: TMP-SMX increases DTG serum levels by ~40% (OCT2/MATE1 inhibition) — not generally clinically significant but monitor for DTG toxicity. TMP-SMX + Zidovudine: additive myelosuppression — monitor CBC weekly. Check ALL ART-OI drug interactions before prescribing.'
-        },
-        {
-          title: 'Management of Trimethoprim-Induced Hyperkalemia in High-Dose TMP-SMX',
-          organization: 'Clinical Pharmacology Consensus',
-          text: 'Trimethoprim (TMP) at HIGH DOSES (as used in PJP treatment) acts as a potassium-sparing diuretic by blocking EPITHELIAL SODIUM CHANNELS (ENaC) in the renal collecting duct. Mechanism: TMP is structurally similar to amiloride (K+-sparing diuretic). By blocking ENaC, TMP prevents sodium reabsorption, dissipating the lumen-negative electrical gradient required for potassium secretion. CONSEQUENCE: Hyperkalemia develops in 12-21% of patients receiving high-dose TMP-SMX (particularly those with CKD, DM, or receiving K+-sparing agents). MONITORING: Serum K+ DAILY during high-dose TMP-SMX therapy. If K+ rises >5.5 mEq/L: Restrict dietary potassium, avoid K+-sparing drugs (ACEi, ARBs, spironolactone). If K+ >6.0 mEq/L: Kayexalate/Patiromer + reduce TMP-SMX dose. ADDITIONAL ADRs of high-dose TMP-SMX in HIV: Rash (40% in HIV, vs 3% in general population — due to altered sulfonamide metabolism in HIV), myelosuppression, hepatotoxicity, drug fever, and Stevens-Johnson Syndrome/TEN (1-2%).'
+          title: 'NICE Neonatal Infection Guidelines',
+          organization: 'NICE',
+          text: 'Empiric therapy: Benzylpenicillin/Ampicillin + Gentamicin. Avoid Ceftriaxone. Stop at 48h if negative.'
         }
       ],
-      calculations: [
-        {
-          name: 'TMP-SMX Weight-Based Dose for Yashwant (70 kg)',
-          formula: 'TMP component: 15-20 mg/kg/day IV or oral ÷ Q6H (4 doses) or Q8H (3 doses)',
-          explanation: 'Yashwant: 70 kg. TMP dose = 15 mg/kg × 70 = 1050 mg TMP/day. IV formulation: Each ampoule = 80 mg TMP + 400 mg SMX in 5 mL (concentration: 16 mg/mL TMP). Daily TMP required: 1050 mg → Volume needed: 1050/16 = 65.6 mL of TMP-SMX concentrate. Divided Q8H: 65.6 mL/3 = 21.9 mL per dose. Dilute each dose in 250 mL NS and infuse over 60-90 minutes. ORAL equivalent: TMP-SMX DS tablet = 160 mg TMP + 800 mg SMX. At 1050 mg TMP/day ÷ 160 = 6.6 DS tablets/day ≈ 2 DS tablets Q8H. Monitor: SCr, K+, CBC, LFTs every 3-5 days during 21-day course.'
-        },
-        {
-          name: 'Alveolar-Arterial (A-a) Oxygen Gradient to Assess PJP Severity',
-          formula: 'A-a gradient = PAO2 - PaO2; PAO2 = [FiO2 × (Patm - PH2O)] - (PaCO2 / RQ)',
-          explanation: 'On room air (FiO2 = 0.21): PAO2 = [0.21 × (760-47)] - (PaCO2/0.8) = 149.7 - (40/0.8) = 149.7 - 50 = 99.7 mmHg. If PaO2 = 62 mmHg (Yashwant\'s): A-a gradient = 99.7 - 62 = 37.7 mmHg. Normal A-a gradient = [Age/4] + 4 = [44/4]+4 = 15 mmHg. Yashwant\'s A-a = 37.7 mmHg >> 15 mmHg (severely elevated). A-a gradient ≥35 mmHg = SEVERE PJP → MANDATORY adjunctive steroids within 72 hours. This gradient reflects impaired gas exchange from Pneumocystis-filled alveoli.'
-        }
-      ],
+      calculations: [],
       reasoning: [
         {
-          question_text: 'Why does Sulfamethoxazole cause a higher rate of hypersensitivity in HIV patients vs the general population?',
-          rationale: 'The rate of TMP-SMX hypersensitivity (rash, fever, anaphylaxis) is 40-80% in HIV-infected individuals, compared to only 3-5% in the general population. The mechanism involves: (1) Altered SULFONAMIDE METABOLISM in HIV: Normally, sulfamethoxazole is primarily acetylated by N-acetyltransferase-2 (NAT2), producing non-toxic acetyl metabolites. In HIV-infected patients, NAT2 activity is reduced, diverting more SMX toward oxidative pathways via CYP2C9, producing HYDROXYLAMINE intermediates — highly reactive, haptenize proteins, and trigger T-cell-mediated (Type IV) hypersensitivity. (2) Glutathione DEPLETION in HIV — glutathione normally detoxifies hydroxylamine metabolites. HIV patients have chronically low glutathione (CD4 cells are particularly glutathione-depleted) → toxic metabolites accumulate → immune sensitization. This explains why "sulfa allergy" rates are dramatically higher in HIV.'
-        },
-        {
-          question_text: 'What is IRIS and why is it a risk when starting ART during active PJP?',
-          rationale: 'Immune Reconstitution Inflammatory Syndrome (IRIS) occurs when a suppressed immune system rapidly reconstitutes after starting ART, causing an exaggerated inflammatory response to existing infections (even subclinical ones). In PJP, IRIS manifests as PARADOXICAL WORSENING (1-4 weeks after ART initiation): worsening fever, hypoxia, and radiological infiltrates DESPITE adequately treating PJP. The dying Pneumocystis organisms release antigens that the newly functional immune system recognizes and attacks violently. RISK FACTORS: CD4 <50 cells/μL at ART start, ART initiation within 2 weeks of OI treatment, disseminated infection. MANAGEMENT of PJP-IRIS: Prednisolone 1 mg/kg/day × 2 weeks (often the adjunctive steroid already prescribed covers this). For severe IRIS: IV Methylprednisolone 500mg-1g for 3 days. Do NOT stop ART. Reason to start ART within 2 weeks (not immediately Day 1): gives antimicrobial therapy time to reduce organism burden before immune reconstitution hits.'
-        },
-        {
-          question_text: 'Why is Fluconazole prescribed for this patient and what are its interactions with ART?',
-          rationale: 'Yashwant has ORAL CANDIDIASIS (thrush) — a common AIDS-defining illness (Stage 3 HIV). Fluconazole 200 mg OD is standard for moderate oral/esophageal candidiasis (Itraconazole/Nystatin for mild cases). However, Fluconazole is a potent CYP3A4 and CYP2C19 inhibitor — significant interactions with ART: (1) Efavirenz (EFV): Fluconazole inhibits EFV metabolism → EFV levels may increase. (2) Nevirapine (NVP): Fluconazole increases NVP levels by 100% — often increases hepatotoxicity risk. (3) Ritonavir-boosted regimens: Ritonavir itself is already a potent CYP3A4 inhibitor — adding fluconazole may cause excessive drug levels. (4) Maraviroc: Fluconazole markedly increases Maraviroc exposure. Duration of fluconazole in esophageal candidiasis: 14-21 days. For prevention of cryptococcal meningitis (CD4 <50): Fluconazole 200 mg OD secondary prophylaxis.'
+          question_text: 'Why higher mg/kg doses for Gentamicin in neonates?',
+          rationale: 'Neonates have higher total body water (larger Vd). Hydrophilic drugs like Gentamicin require higher doses to reach peak levels.'
         }
       ],
       mnemonics: [
         {
-          name: 'HIV Opportunistic Infection Thresholds (CD4 Count Ladder)',
-          concept: 'CD4 count at which specific OIs appear — critical for PJP prophylaxis and treatment triggers',
+          name: 'Neonatal Sepsis Signs (BABY-SEPSIS)',
+          concept: 'Non-specific signs',
           bullets: [
-            'CD4 <500: Herpes Zoster (shingles), Seborrheic dermatitis, Oral candidiasis (thrush)',
-            'CD4 <200: PJP (Pneumocystis pneumonia) — START PROPHYLAXIS (TMP-SMX DS OD)',
-            'CD4 <150: Histoplasmosis, Coccidioidomycosis (in endemic areas)',
-            'CD4 <100: Toxoplasma encephalitis — Add Pyrimethamine prophylaxis to TMP-SMX',
-            'CD4 <50: CMV Retinitis/Colitis, Disseminated MAC (Mycobacterium avium complex), Cryptococcal meningitis, Microsporidiosis',
-            'REMEMBER: PJP prophylaxis TMP-SMX: CD4 <200 OR any AIDS-defining illness OR constitutional symptoms (weight loss >10%, unexplained fever >1 month, diarrhea >1 month)',
-            'ART START during OI: Within 2 WEEKS for most OIs (ACTG A5164). EXCEPTION: TB Meningitis — delay 4-6 weeks (severe IRIS risk)'
+            'B — Breathing (tachypnea/grunting)',
+            'A — Activity (lethargy)',
+            'B — Blood glucose instability',
+            'Y — Yellow (early jaundice)'
           ]
         }
       ]
-    },
-    tags: ['HIV', 'PJP', 'cotrimoxazole', 'prednisolone', 'opportunistic-infection'],
-    source: 'seed',
-    created_at: '2025-01-19T00:00:00Z',
+    }
+  },
+
+  // CASE 18: GERIATRICS
+  {
+    id: 'seed-018',
+    title: 'Geriatric Polypharmacy & Beers Criteria Delirium',
+    subject_area: 'community_pharmacy',
+    difficulty: 'medium',
+    tags: ['Beers Criteria', 'Delirium', 'Anticholinergic', 'Deprescribing'],
+    phases: [
+      {
+        id: 'seed-018-phase-1',
+        title: 'Day 1: Polypharmacy Review',
+        description: 'Elderly patient admitted after a fall, exhibiting acute delirium and dry mouth.',
+        patient_snapshot: {
+          name: 'Ramesh Patel', age: 82, sex: 'M', ward: 'Geriatrics', bed: '14',
+          presenting_complaint: 'Confusion, dry mouth, urinary retention, fall.',
+          pmh: ['Neuropathy', 'Insomnia', 'Hypertension'],
+          medications: [
+            { drug: 'Amitriptyline', dose: '50 mg', frequency: 'ON', route: 'Oral' },
+            { drug: 'Diphenhydramine', dose: '25 mg', frequency: 'ON', route: 'Oral' },
+            { drug: 'Amlodipine', dose: '5 mg', frequency: 'OD', route: 'Oral' }
+          ],
+          allergies: ['None'],
+          labs: []
+        },
+        questions: [
+          {
+            id: 'q-018-1', case_id: 'seed-018',
+            question_text: 'Which tool is most appropriate for identifying potentially inappropriate medications (PIMs) in this elderly patient?',
+            option_a: 'Child-Pugh Score',
+            option_b: 'Beers Criteria',
+            option_c: 'HAS-BLED Score',
+            option_d: 'Cockcroft-Gault Equation',
+            correct_option: 'B',
+            pci_duty_category: 'treatment_chart_review',
+            question_type: 'mcq',
+            explanation_text: 'The AGS Beers Criteria identifies medications that should be avoided in older adults due to high risk of adverse events.',
+            subject_reference: 'Geriatrics'
+          },
+          {
+            id: 'q-018-2', case_id: 'seed-018',
+            question_text: 'Which medications in the MAR are contributing to his high anticholinergic burden (confusion, dry mouth, urinary retention)?',
+            option_a: 'Amlodipine only',
+            option_b: 'Amitriptyline and Diphenhydramine',
+            option_c: 'None of them',
+            option_d: 'Amlodipine and Diphenhydramine',
+            correct_option: 'B',
+            pci_duty_category: 'adr_detection',
+            question_type: 'mar_action',
+            target_drug: 'Amitriptyline',
+            explanation_text: 'Both amitriptyline (TCA) and diphenhydramine (1st-gen antihistamine) are highly anticholinergic and Beers Criteria violators.',
+            subject_reference: 'Geriatrics'
+          }
+        ]
+      },
+      {
+        id: 'seed-018-phase-2',
+        title: 'Day 2: Deprescribing',
+        description: 'Managing the withdrawal of inappropriate drugs.',
+        patient_snapshot: {
+          name: 'Ramesh Patel', age: 82, sex: 'M', ward: 'Geriatrics', bed: '14',
+          presenting_complaint: 'Agitated.',
+          pmh: [],
+          medications: [],
+          allergies: [],
+          labs: []
+        },
+        questions: [
+          {
+            id: 'q-018-3', case_id: 'seed-018',
+            question_text: 'How should Amitriptyline be discontinued?',
+            option_a: 'Stop abruptly.',
+            option_b: 'Taper gradually to prevent cholinergic rebound and withdrawal symptoms.',
+            option_c: 'Increase dose.',
+            option_d: 'Switch to Doxepin.',
+            correct_option: 'B',
+            pci_duty_category: 'treatment_chart_review',
+            question_type: 'mcq',
+            explanation_text: 'TCAs must be tapered to prevent withdrawal (nausea, headache, sleep disturbance).',
+            subject_reference: 'Geriatrics'
+          },
+          {
+            id: 'q-018-4', case_id: 'seed-018',
+            question_text: 'If a pharmacological sleep aid is absolutely required, which is safest in the elderly?',
+            option_a: 'Diazepam',
+            option_b: 'Melatonin',
+            option_c: 'Zolpidem',
+            option_d: 'Flurazepam',
+            correct_option: 'B',
+            pci_duty_category: 'evaluate',
+            question_type: 'mcq',
+            explanation_text: 'Melatonin avoids the fall risk, cognitive impairment, and dependency associated with Z-drugs and Benzodiazepines.',
+            subject_reference: 'Geriatrics'
+          }
+        ]
+      },
+      {
+        id: 'seed-018-phase-3',
+        title: 'Day 3: Delirium Management',
+        description: 'Non-pharmacological management of acute delirium.',
+        patient_snapshot: {
+          name: 'Ramesh Patel', age: 82, sex: 'M', ward: 'Geriatrics', bed: '14',
+          presenting_complaint: 'Delirium clearing.',
+          pmh: [],
+          medications: [],
+          allergies: [],
+          labs: []
+        },
+        questions: [
+          {
+            id: 'q-018-5', case_id: 'seed-018',
+            question_text: 'What is the first-line intervention for delirium in hospitalized older adults?',
+            option_a: 'Haloperidol IV',
+            option_b: 'Lorazepam IV',
+            option_c: 'Non-pharmacological: hydration, orientation, mobilization, and removing offending drugs.',
+            option_d: 'Physical restraints',
+            correct_option: 'C',
+            pci_duty_category: 'patient_counselling',
+            question_type: 'mcq',
+            explanation_text: 'Antipsychotics/Benzos worsen outcomes. The HELP protocol (non-pharm) is first-line.',
+            subject_reference: 'Geriatrics'
+          },
+          {
+            id: 'q-018-6', case_id: 'seed-018',
+            question_text: 'What is the antidote for severe central anticholinergic toxicity?',
+            option_a: 'Naloxone',
+            option_b: 'Physostigmine',
+            option_c: 'Flumazenil',
+            option_d: 'Atropine',
+            correct_option: 'B',
+            pci_duty_category: 'drug_poison_info',
+            question_type: 'mcq',
+            explanation_text: 'Physostigmine is a reversible cholinesterase inhibitor that crosses the BBB, reversing central anticholinergic delirium.',
+            subject_reference: 'Toxicology'
+          }
+        ]
+      }
+    ],
+    study_guide: {
+      guidelines: [
+        {
+          title: 'AGS Beers Criteria (2023)',
+          organization: 'AGS',
+          text: 'Avoid TCAs, 1st-gen antihistamines, and short-acting benzos due to severe anticholinergic and fall risks.'
+        }
+      ],
+      calculations: [],
+      reasoning: [
+        {
+          question_text: 'Why are elderly vulnerable to anticholinergics?',
+          rationale: 'Decreased cholinergic neurons, increased BBB permeability, and reduced hepatic/renal clearance.'
+        }
+      ],
+      mnemonics: [
+        {
+          name: 'Anticholinergic Toxidrome',
+          concept: 'Symptoms',
+          bullets: [
+            'Hot as a hare',
+            'Dry as a bone',
+            'Blind as a bat',
+            'Red as a beet',
+            'Mad as a hatter'
+          ]
+        }
+      ]
+    }
+  },
+
+  // CASE 19: INFECTIOUS DISEASES / HIV
+  {
+    id: 'seed-019',
+    title: 'HIV / AIDS & Pneumocystis Pneumonia (PJP)',
+    subject_area: 'infectious_diseases',
+    difficulty: 'hard',
+    tags: ['HIV', 'PJP', 'Cotrimoxazole', 'Corticosteroids', 'IRIS'],
+    phases: [
+      {
+        id: 'seed-019-phase-1',
+        title: 'Day 1: Severe PJP Treatment',
+        description: 'HIV patient with severe PJP and hypoxia. PaO2 60 mmHg.',
+        patient_snapshot: {
+          name: 'John Doe', age: 40, sex: 'M', ward: 'Infectious Diseases', bed: '2',
+          presenting_complaint: 'Progressive exertional dyspnea, dry cough, fever.',
+          pmh: ['Newly diagnosed HIV (CD4 45)'],
+          medications: [
+            { drug: 'Trimethoprim-Sulfamethoxazole', dose: '15 mg/kg/day', frequency: 'Q6H', route: 'IV' }
+          ],
+          allergies: ['None'],
+          labs: [
+            { name: 'PaO2', value: '60', unit: 'mmHg', reference: '75-100', is_abnormal: true },
+            { name: 'CD4 Count', value: '45', unit: 'cells/mm3', reference: '500-1500', is_abnormal: true }
+          ]
+        },
+        questions: [
+          {
+            id: 'q-019-1', case_id: 'seed-019',
+            question_text: 'The patient has PJP with a PaO2 of 60 mmHg. What adjunctive therapy must be added immediately?',
+            option_a: 'Azithromycin',
+            option_b: 'Corticosteroids (e.g., Prednisone 40mg BD)',
+            option_c: 'Antiretroviral therapy (ART) immediately',
+            option_d: 'Fluconazole',
+            correct_option: 'B',
+            pci_duty_category: 'treatment_chart_review',
+            question_type: 'mcq',
+            explanation_text: 'Adjunctive corticosteroids are mandatory in severe PJP (PaO2 < 70 mmHg) to prevent worsening hypoxia from the inflammatory response to dying organisms.',
+            subject_reference: 'Infectious Diseases'
+          },
+          {
+            id: 'q-019-2', case_id: 'seed-019',
+            question_text: 'When should Antiretroviral Therapy (ART) be initiated?',
+            option_a: 'Immediately alongside TMP-SMX.',
+            option_b: 'Within 2 weeks of starting PJP treatment.',
+            option_c: 'After 6 months.',
+            option_d: 'Only when CD4 > 200.',
+            correct_option: 'B',
+            pci_duty_category: 'treatment_chart_review',
+            question_type: 'mcq',
+            explanation_text: 'ART is started within 2 weeks of OI treatment to balance immune recovery with the risk of IRIS.',
+            subject_reference: 'Infectious Diseases'
+          }
+        ]
+      },
+      {
+        id: 'seed-019-phase-2',
+        title: 'Day 5: TMP-SMX ADRs',
+        description: 'Monitoring for high-dose TMP-SMX toxicities.',
+        patient_snapshot: {
+          name: 'John Doe', age: 40, sex: 'M', ward: 'Infectious Diseases', bed: '2',
+          presenting_complaint: 'Monitoring labs.',
+          pmh: [],
+          medications: [],
+          allergies: [],
+          labs: [
+            { name: 'K+', value: '5.8', unit: 'mEq/L', reference: '3.5-5.0', is_abnormal: true }
+          ]
+        },
+        questions: [
+          {
+            id: 'q-019-3', case_id: 'seed-019',
+            question_text: 'His potassium is 5.8 mEq/L. Why does high-dose TMP-SMX cause hyperkalemia?',
+            option_a: 'Sulfamethoxazole causes hemolysis.',
+            option_b: 'Trimethoprim acts like amiloride, blocking the ENaC channel in the distal nephron, reducing K+ excretion.',
+            option_c: 'It causes acute liver failure.',
+            option_d: 'It releases K+ from the lungs.',
+            correct_option: 'B',
+            pci_duty_category: 'drug_interaction',
+            question_type: 'mcq',
+            explanation_text: 'TMP is a potassium-sparing diuretic at high doses, leading to hyperkalemia.',
+            subject_reference: 'Pharmacotherapeutics'
+          },
+          {
+            id: 'q-019-4', case_id: 'seed-019',
+            question_text: 'Why are HIV patients more prone to Sulfamethoxazole hypersensitivity (rash/fever)?',
+            option_a: 'High CD4 count.',
+            option_b: 'Altered metabolism (CYP2C9 shunt) and glutathione depletion causing toxic hydroxylamine accumulation.',
+            option_c: 'Concomitant steroid use.',
+            option_d: 'Viral mutations.',
+            correct_option: 'B',
+            pci_duty_category: 'adr_detection',
+            question_type: 'mcq',
+            explanation_text: 'HIV patients have depleted glutathione and altered acetylation, leading to toxic sulfonamide metabolites.',
+            subject_reference: 'Pharmacotherapeutics'
+          }
+        ]
+      },
+      {
+        id: 'seed-019-phase-3',
+        title: 'Day 21: Discharge Prophylaxis',
+        description: 'PJP resolved. Arranging long-term prophylaxis.',
+        patient_snapshot: {
+          name: 'John Doe', age: 40, sex: 'M', ward: 'Infectious Diseases', bed: '2',
+          presenting_complaint: 'Ready for discharge.',
+          pmh: [],
+          medications: [],
+          allergies: [],
+          labs: []
+        },
+        questions: [
+          {
+            id: 'q-019-5', case_id: 'seed-019',
+            question_text: 'When can secondary PJP prophylaxis (TMP-SMX 1 DS tab OD) be safely discontinued?',
+            option_a: 'After 1 year.',
+            option_b: 'When CD4 count remains >200 cells/μL for at least 3 months on ART.',
+            option_c: 'It is lifelong.',
+            option_d: 'When viral load is undetectable for 1 week.',
+            correct_option: 'B',
+            pci_duty_category: 'evaluate',
+            question_type: 'mcq',
+            explanation_text: 'Prophylaxis can stop once immune reconstitution (CD4 >200) is sustained for 3 months.',
+            subject_reference: 'Infectious Diseases'
+          },
+          {
+            id: 'q-019-6', case_id: 'seed-019',
+            question_text: 'What other prophylaxis is indicated for him since his CD4 is 45?',
+            option_a: 'Azithromycin for MAC (if not on ART) and Fluconazole.',
+            option_b: 'No other prophylaxis needed.',
+            option_c: 'Acyclovir.',
+            option_d: 'Rifampin.',
+            correct_option: 'A',
+            pci_duty_category: 'treatment_chart_review',
+            question_type: 'mcq',
+            explanation_text: 'CD4 <50 warrants MAC prophylaxis (Azithromycin) if ART is delayed, and often fungal prophylaxis depending on guidelines.',
+            subject_reference: 'Infectious Diseases'
+          }
+        ]
+      }
+    ],
+    study_guide: {
+      guidelines: [
+        {
+          title: 'NIH/CDC OI Guidelines (2020)',
+          organization: 'NIH/CDC',
+          text: 'Steroids mandatory for PJP if PaO2 <70 mmHg or A-a gradient ≥35. ART start within 2 weeks.'
+        }
+      ],
+      calculations: [],
+      reasoning: [
+        {
+          question_text: 'What is IRIS?',
+          rationale: 'Immune Reconstitution Inflammatory Syndrome: Exaggerated inflammatory response to dead/dying organisms upon rapidly starting ART.'
+        }
+      ],
+      mnemonics: [
+        {
+          name: 'CD4 Thresholds',
+          concept: 'When to start prophylaxis',
+          bullets: [
+            '<200: PJP (TMP-SMX)',
+            '<100: Toxoplasma (TMP-SMX)',
+            '<50: MAC (Azithromycin)'
+          ]
+        }
+      ]
+    }
   },
 
   // CASE 20: CARDIOVASCULAR
@@ -3646,98 +6362,132 @@ export const seedCases: ClinicalCase[] = [
     title: 'Acute STEMI & Secondary Prevention',
     subject_area: 'cardiovascular',
     difficulty: 'hard',
-    patient_snapshot: {
-      name: 'Vikram Singh',
-      age: 55,
-      sex: 'M',
-      ward: 'CCU',
-      bed: '8',
-      presenting_complaint: 'Crushing chest pain radiating to the left arm. ECG shows ST-elevation in leads II, III, and aVF.',
-      pmh: ['Hypertension', 'GERD'],
-      medications: [
-        { drug: 'Amlodipine', dose: '5 mg', frequency: 'OD', route: 'Oral' },
-        { drug: 'Omeprazole', dose: '40 mg', frequency: 'OD', route: 'Oral' }
-      ],
-      allergies: ['None'],
-      labs: [
-        { name: 'Troponin I', value: '12', unit: 'ng/mL', reference: '<0.04', is_abnormal: true }
-      ]
-    },
-    questions: [
-      {
-        id: 'q-020-1', case_id: 'seed-020',
-        question_text: 'The patient is diagnosed with an inferior STEMI and requires loading for Primary PCI. Which Dual Antiplatelet Therapy (DAPT) loading dose is appropriate?',
-        option_a: 'Aspirin 300mg + Ticagrelor 180mg',
-        option_b: 'Aspirin 75mg + Clopidogrel 75mg',
-        option_c: 'Aspirin 300mg + Warfarin 5mg',
-        option_d: 'Heparin + Alteplase',
-        correct_option: 'A',
-        pci_duty_category: 'treatment_chart_review',
-        question_type: 'mcq',
-        explanation_text: 'For Primary PCI, the standard DAPT loading is Aspirin 300mg and a P2Y12 inhibitor load (Ticagrelor 180mg or Clopidogrel 600mg).',
-        subject_reference: 'Cardiology'
-      },
-      {
-        id: 'q-020-2', case_id: 'seed-020',
-        question_text: 'If Clopidogrel were chosen instead of Ticagrelor, what is a major drug interaction to address in his home medications?',
-        option_a: 'Clopidogrel and Amlodipine',
-        option_b: 'Clopidogrel and Omeprazole',
-        option_c: 'Clopidogrel and Aspirin',
-        option_d: 'Clopidogrel and Heparin',
-        correct_option: 'B',
-        pci_duty_category: 'drug_interaction',
-        question_type: 'mcq',
-        explanation_text: 'Omeprazole strongly inhibits CYP2C19, the enzyme responsible for converting Clopidogrel to its active metabolite, increasing the risk of stent thrombosis. Pantoprazole is preferred.',
-        subject_reference: 'Cardiology'
-      },
-      {
-        id: 'q-020-3', case_id: 'seed-020',
-        question_text: 'Which medication should be recommended for his GERD to avoid interaction with Clopidogrel?',
-        option_a: 'Esomeprazole',
-        option_b: 'Pantoprazole',
-        option_c: 'Lansoprazole',
-        option_d: 'Cimetidine',
-        correct_option: 'B',
-        pci_duty_category: 'treatment_chart_review',
-        question_type: 'mcq',
-        explanation_text: 'Pantoprazole has minimal CYP2C19 inhibition and is safe to use with Clopidogrel.',
-        subject_reference: 'Cardiology'
-      }
-    ],
+    tags: ['STEMI', 'DAPT', 'Ticagrelor', 'Secondary Prevention'],
     phases: [
       {
         id: 'seed-020-phase-1',
-        title: 'Day 1: STEMI Presentation',
-        description: 'Patient presents with acute inferior STEMI for PCI.',
+        title: 'Hour 1: ER Presentation',
+        description: 'Patient presents with inferior STEMI. Needs DAPT loading.',
         patient_snapshot: {
-          name: 'Vikram Singh',
-          age: 55,
-          sex: 'M',
-          ward: 'CCU',
-          bed: '8',
-          presenting_complaint: 'Crushing chest pain.',
-          pmh: ['Hypertension', 'GERD'],
+          name: 'Vikram Singh', age: 55, sex: 'M', ward: 'ER', bed: '1',
+          presenting_complaint: 'Crushing chest pain. ST-elevation II, III, aVF.',
+          pmh: ['GERD', 'Hypertension'],
           medications: [
-            { drug: 'Amlodipine', dose: '5 mg', frequency: 'OD', route: 'Oral' },
             { drug: 'Omeprazole', dose: '40 mg', frequency: 'OD', route: 'Oral' }
           ],
           allergies: ['None'],
-          labs: [
-            { name: 'Troponin I', value: '12', unit: 'ng/mL', reference: '<0.04', is_abnormal: true }
-          ]
+          labs: []
         },
         questions: [
           {
+            id: 'q-020-1', case_id: 'seed-020',
+            question_text: 'Which DAPT loading dose is appropriate for Primary PCI?',
+            option_a: 'Aspirin 300mg + Ticagrelor 180mg (or Clopidogrel 600mg).',
+            option_b: 'Aspirin 75mg + Clopidogrel 75mg.',
+            option_c: 'Warfarin + Aspirin.',
+            option_d: 'Heparin + Alteplase.',
+            correct_option: 'A',
+            pci_duty_category: 'treatment_chart_review',
+            question_type: 'mcq',
+            explanation_text: 'High-dose loading of Aspirin and a P2Y12 inhibitor is required immediately prior to PCI to prevent stent thrombosis.',
+            subject_reference: 'Cardiology'
+          },
+          {
             id: 'q-020-2', case_id: 'seed-020',
-            question_text: 'If Clopidogrel were chosen instead of Ticagrelor, what is a major drug interaction to address in his home medications?',
-            option_a: 'Clopidogrel and Amlodipine',
-            option_b: 'Clopidogrel and Omeprazole',
-            option_c: 'Clopidogrel and Aspirin',
-            option_d: 'Clopidogrel and Heparin',
+            question_text: 'If Clopidogrel is chosen, what major drug interaction exists with his home meds?',
+            option_a: 'Amlodipine inhibits Clopidogrel.',
+            option_b: 'Omeprazole strongly inhibits CYP2C19, preventing conversion of Clopidogrel to its active metabolite.',
+            option_c: 'No interaction.',
+            option_d: 'Omeprazole increases bleeding.',
             correct_option: 'B',
             pci_duty_category: 'drug_interaction',
             question_type: 'mcq',
-            explanation_text: 'Omeprazole strongly inhibits CYP2C19, decreasing clopidogrel efficacy.',
+            explanation_text: 'Clopidogrel is a prodrug requiring CYP2C19. Omeprazole blocks this, causing therapeutic failure and stent thrombosis.',
+            subject_reference: 'Pharmacotherapeutics'
+          }
+        ]
+      },
+      {
+        id: 'seed-020-phase-2',
+        title: 'Day 2: Post-PCI Care',
+        description: 'Optimizing medications post-stenting.',
+        patient_snapshot: {
+          name: 'Vikram Singh', age: 55, sex: 'M', ward: 'CCU', bed: '8',
+          presenting_complaint: 'Recovering post-PCI.',
+          pmh: [],
+          medications: [
+            { drug: 'Aspirin', dose: '75 mg', frequency: 'OD', route: 'Oral' },
+            { drug: 'Clopidogrel', dose: '75 mg', frequency: 'OD', route: 'Oral' }
+          ],
+          allergies: [],
+          labs: []
+        },
+        questions: [
+          {
+            id: 'q-020-3', case_id: 'seed-020',
+            question_text: 'Which PPI should be substituted for Omeprazole to safely protect his stomach?',
+            option_a: 'Esomeprazole',
+            option_b: 'Pantoprazole (least CYP2C19 inhibition).',
+            option_c: 'Lansoprazole',
+            option_d: 'Cimetidine',
+            correct_option: 'B',
+            pci_duty_category: 'treatment_chart_review',
+            question_type: 'mcq',
+            explanation_text: 'Pantoprazole does not significantly inhibit CYP2C19, making it the PPI of choice with Clopidogrel.',
+            subject_reference: 'Pharmacotherapeutics'
+          },
+          {
+            id: 'q-020-4', case_id: 'seed-020',
+            question_text: 'Why is routine high-flow oxygen no longer recommended for normoxic STEMI patients?',
+            option_a: 'It wastes hospital resources.',
+            option_b: 'Hyperoxia causes coronary vasoconstriction and increases free radical damage, worsening the infarct size.',
+            option_c: 'It causes COPD.',
+            option_d: 'It suppresses breathing.',
+            correct_option: 'B',
+            pci_duty_category: 'evaluate',
+            question_type: 'mcq',
+            explanation_text: 'The AVOID trial showed routine oxygen in non-hypoxic patients actually increases myocardial injury.',
+            subject_reference: 'Cardiology'
+          }
+        ]
+      },
+      {
+        id: 'seed-020-phase-3',
+        title: 'Day 4: Discharge GDMT',
+        description: 'Ensuring all pillars of secondary prevention are prescribed.',
+        patient_snapshot: {
+          name: 'Vikram Singh', age: 55, sex: 'M', ward: 'General', bed: '12',
+          presenting_complaint: 'Ready for discharge.',
+          pmh: [],
+          medications: [],
+          allergies: [],
+          labs: []
+        },
+        questions: [
+          {
+            id: 'q-020-5', case_id: 'seed-020',
+            question_text: 'Which class of medications must be added to prevent adverse ventricular remodeling post-MI?',
+            option_a: 'ACE Inhibitor (e.g., Ramipril) or ARB.',
+            option_b: 'Calcium Channel Blocker.',
+            option_c: 'Digoxin.',
+            option_d: 'Nitrates.',
+            correct_option: 'A',
+            pci_duty_category: 'treatment_chart_review',
+            question_type: 'mcq',
+            explanation_text: 'ACE inhibitors prevent the heart from dilating and failing after an infarct (remodeling).',
+            subject_reference: 'Cardiology'
+          },
+          {
+            id: 'q-020-6', case_id: 'seed-020',
+            question_text: 'What is the target LDL cholesterol for this patient post-STEMI on high-intensity statin therapy?',
+            option_a: '< 100 mg/dL',
+            option_b: '< 70 mg/dL or < 55 mg/dL per newest ESC guidelines.',
+            option_c: '< 130 mg/dL',
+            option_d: 'Statins aren\'t needed if cholesterol is normal.',
+            correct_option: 'B',
+            pci_duty_category: 'drug_therapy_monitoring',
+            question_type: 'mcq',
+            explanation_text: 'Very strict LDL control (<55 mg/dL) is mandated for secondary prevention post-ACS.',
             subject_reference: 'Cardiology'
           }
         ]
@@ -3746,134 +6496,41 @@ export const seedCases: ClinicalCase[] = [
     study_guide: {
       guidelines: [
         {
-          title: 'ESC Guidelines for the Management of Acute Myocardial Infarction in Patients with ST-Segment Elevation (2017)',
+          title: 'ESC Guidelines for STEMI (2017/2023)',
           organization: 'ESC',
-          text: 'STEMI MANAGEMENT PATHWAY: (1) Primary PCI is the REPERFUSION OF CHOICE if achievable within 120 minutes of first medical contact (FMC). (2) Fibrinolysis (Tenecteplase, Alteplase, Streptokinase) if PCI delay >120 min AND <12 hours from symptom onset. Tenecteplase weight-based single IV bolus over 10 seconds: <60 kg → 30 mg, 60-70 kg → 35 mg, 70-80 kg → 40 mg (Harpal: 40 mg). ANTIPLATELET: Aspirin 300-325 mg chewed immediately + Clopidogrel 300 mg loading (if age <75) or 75 mg (if ≥75). ANTICOAGULATION with fibrinolysis: UFH bolus 60 units/kg (max 4000 units) then infusion 12 units/kg/h (max 1000 units/h) for at least 48h OR Enoxaparin 30 mg IV bolus then 1 mg/kg SC Q12H (reduce to 0.75 mg/kg if ≥75 years). MONITORING: Target APTT 50-70 seconds for UFH. SECONDARY PREVENTION (ALL post-MI patients): DAPT × 12 months + High-intensity statin (Atorvastatin 80 mg OD) + Beta-blocker (Metoprolol Succinate, start low, titrate) + ACEi (Ramipril 2.5-10 mg OD) + Eplerenone (if EF <40% or HF symptoms).'
-        },
-        {
-          title: 'AHA/ACC Clinical Decision Pathway — PPI Use with Dual Antiplatelet Therapy (2010)',
-          organization: 'AHA/ACC/ACG',
-          text: 'PPIs with Clopidogrel: Clopidogrel is a PRODRUG activated by CYP2C19 to its active thiol metabolite. CYP2C19 inhibitors reduce this conversion, decreasing antiplatelet efficacy and potentially increasing stent thrombosis. PPI RANKING by CYP2C19 inhibition: OMEPRAZOLE (highest inhibitor — CONTRAINDICATED with Clopidogrel per FDA warning); Esomeprazole (high — avoid); Lansoprazole (moderate — caution); PANTOPRAZOLE (lowest — PREFERRED PPI if gastric protection needed with DAPT); Rabeprazole (low — acceptable). FDA 2009 Warning: Avoid concurrent use of Omeprazole or Esomeprazole with Clopidogrel. Gastric protection indications with DAPT: Age >65, H. pylori positive, prior GI bleeding, concurrent NSAID/corticosteroid use. If GI protection is needed: USE PANTOPRAZOLE 40 mg OD — it has the least CYP2C19 inhibitory activity.'
-        },
-        {
-          title: 'MONA Protocol vs Evidence-Based ACS Management (Updated Evidence)',
-          organization: 'ACC/AHA/ESC',
-          text: 'MONA (Morphine-Oxygen-Nitrates-Aspirin) — Evidence Update: ASPIRIN (A): Still first-line. Chew 300-325 mg non-enteric-coated immediately (buccal absorption = onset 5-10 min vs 30-60 min for swallowed EC form). OXYGEN (O): Now RESTRICTED — Give only if SpO2 <90% (hypoxemia). Routine high-flow oxygen in normoxic patients WORSENS outcomes (AVOID-HF trial — oxygen causes coronary vasoconstriction in non-hypoxic patients via reactive oxygen species). NITRATES (N): IV Nitroglycerin for ongoing pain, hypertension, or pulmonary edema. WITHHOLD if: systolic BP <90 mmHg, recent PDE-5 inhibitor use (Sildenafil, Tadalafil within 24-48h — severe hypotension), RV infarction. MORPHINE (M): Use with CAUTION — TREAT registry showed morphine associated with worse outcomes in NSTEMI (slows Clopidogrel absorption). In STEMI with severe pain: still acceptable at 4-8 mg IV titrated slowly. Consider Fentanyl as alternative (faster onset, less nausea).'
+          text: 'Primary PCI <120 mins. DAPT loading required. Secondary prevention: DAPT, Beta-blocker, High-intensity Statin, ACEi.'
         }
       ],
-      calculations: [
-        {
-          name: 'TIMI Risk Score for STEMI — 30-Day Mortality Prediction',
-          formula: 'Score = Sum of: Age 65-74 (2pts), Age ≥75 (3pts), Diabetes/HTN/Angina (1pt), SBP <100 (3pts), HR >100 (2pts), Killip Class II-IV (2pts), Weight <67 kg (1pt), Anterior STE or LBBB (1pt), Time to Tx >4h (1pt). Max=14',
-          explanation: 'Harpal\'s TIMI STEMI Score: Age 56 (0pts) + HTN+DM (1pt) + SBP 142 (0pts) + HR 92 (0pts) + Killip I (0pts) + weight ~75 kg (0pts) + Anterior STEMI V1-V4 (1pt) + time 1.5h (0pts) = Total: 2. TIMI 2 = ~3-5% 30-day mortality (low-intermediate risk). TIMI >5 = high risk, strongly favoring primary PCI over fibrinolysis. Despite low TIMI score, reperfusion is still mandatory to preserve myocardium — "time is muscle" principle: every 30 minutes of delay = additional 7% relative increase in 1-year mortality.'
-        },
-        {
-          name: 'Tenecteplase Weight-Based Dose Calculation for Harpal Singh',
-          formula: 'Tenecteplase: <60 kg → 30 mg; 60-70 kg → 35 mg; 70-80 kg → 40 mg; 80-90 kg → 45 mg; >90 kg → 50 mg (max)',
-          explanation: 'Harpal weighs ~75 kg → Tenecteplase 40 mg as a single IV BOLUS over 10 seconds (unlike Alteplase which requires 90-min infusion). Reconstitute 40 mg vial with 8 mL sterile water → 5 mg/mL → inject 8 mL IV bolus. Pre-specify: confirm NO contraindications: no prior hemorrhagic stroke, no BP >180/110 at time of treatment, no ischemic stroke in last 3 months, not post-major surgery in last 3 weeks. Post-thrombolysis: maintain UFH infusion, target APTT 50-70 sec. Monitor for hemorrhagic transformation: neurological deterioration = STOP thrombolytic, order emergency CT brain. Transfer to PCI-capable center within 24h (pharmaco-invasive strategy).'
-        }
-      ],
+      calculations: [],
       reasoning: [
         {
-          question_text: 'Why is Aspirin absorbed faster when chewed vs swallowed in acute MI?',
-          rationale: 'The PRIMARY goal in acute MI is IMMEDIATE platelet inhibition — every minute of delayed platelet inhibition means more thrombus formation and more myocardial death. CHEWED (plain/non-enteric-coated) aspirin: (1) Buccal and sublingual absorption begins immediately through oral mucosa (bypasses GI tract); (2) Dissolved tablet particles have large surface area → faster gastric absorption. Platelets are inhibited within 5-10 minutes. SWALLOWED enteric-coated (EC) aspirin: (1) Coated to resist gastric acid — must reach small intestine before dissolving; (2) Gastric emptying time 1-2 hours; (3) Platelet inhibition delayed 60-90 minutes. In acute MI, 60 minutes of delayed platelet inhibition = another 25-30% of the "at-risk myocardium" may infarct. THIS IS WHY: the first dose should NEVER be enteric-coated; long-term maintenance (once daily for secondary prevention) can be EC to reduce GI irritation.'
-        },
-        {
-          question_text: 'Why is Metoclopramide concerning in acute MI, and what antiemetic should be used instead?',
-          rationale: 'Harpal presents with vomiting (common in STEMI due to vagal stimulation from inferior MI). Metoclopramide is ordered for nausea. However: (1) Metoclopramide blocks D2 receptors — causes TACHYARRHYTHMIAS and QT prolongation, which is particularly dangerous in the ischemic myocardium (already prone to arrhythmias from electrolyte shifts and catecholamine surge); (2) Metoclopramide accelerates gastric emptying — this actually SPEEDS UP absorption of oral clopidogrel loading dose (potentially beneficial) BUT also speeds up nitroglycerin patch absorption; (3) It can worsen Parkinson\'s (if this patient had PD). PREFERRED ANTIEMETIC in ACS: Ondansetron 4 mg IV — 5-HT3 antagonist with less D2 receptor activity, minimal QT prolongation at standard doses and NO arrhythmia risk. Alternatively, low-dose Haloperidol 0.5-1 mg IV for refractory vomiting in ICU. AVOID Droperidol, Chlorpromazine, and high-dose Metoclopramide in acute MI.'
-        },
-        {
-          question_text: 'What is the "pharmacoinvasive strategy" and why is it relevant for this patient?',
-          rationale: 'The PHARMACOINVASIVE STRATEGY is a specific reperfusion approach for STEMI when primary PCI is NOT immediately available but fibrinolysis is feasible. Protocol: (1) Administer fibrinolytic therapy (Tenecteplase) IMMEDIATELY at the presenting hospital; (2) Transfer to a PCI-capable center; (3) Perform ANGIOGRAPHY within 3-24 hours REGARDLESS of symptoms; (4) If fibrinolysis fails (ST elevation <50% reduction at 90 minutes, hemodynamic instability, or ongoing chest pain) → RESCUE PCI immediately. This strategy (proven in STREAM trial and TRANSFER-AMI trial) is recommended for STEMI patients presenting to non-PCI centers who cannot be transferred for primary PCI within 120 minutes. It achieves comparable outcomes to primary PCI in low-risk STEMI. Harpal\'s TIMI score of 2 and symptom onset only 1.5 hours ago makes him an excellent candidate.'
+          question_text: 'Why chew aspirin?',
+          rationale: 'Buccal absorption bypasses GI tract for immediate platelet inhibition (5 mins vs 60 mins).'
         }
       ],
       mnemonics: [
         {
           name: 'Post-MI Secondary Prevention (B-A-S-E-S)',
-          concept: 'Four mandatory drug classes post-STEMI for secondary prevention — pharmacist discharge counseling',
+          concept: 'Discharge meds',
           bullets: [
-            'B — Beta-blocker: Metoprolol Succinate (XR) 25-200 mg OD. Reduces cardiac workload, prevents arrhythmias, reduces reinfarction. Start within 24h if hemodynamically stable. Avoid if: acute decompensated HF, HR<50, BP<90, PR interval>0.24s.',
-            'A — Antiplatelet (Dual): Aspirin 75-100 mg OD (lifelong) + Clopidogrel 75 mg OD (12 months). Prasugrel/Ticagrelor preferred if PCI done. If Clopidogrel: use Pantoprazole (not Omeprazole) for GI protection',
-            'S — Statin (High-Intensity): Atorvastatin 80 mg OD or Rosuvastatin 20-40 mg OD. LDL target: <55 mg/dL (<1.4 mmol/L) per ESC 2019. No off days — lifelong therapy. If LDL not at target: add Ezetimibe 10 mg OD',
-            'E — EACE inhibitor: Ramipril 2.5-10 mg OD (titrate) OR Perindopril. Prevents ventricular remodeling, reduces HF risk. Monitor BP and SCr (can rise 10-20% — acceptable). If ACEi-intolerant: use ARB (Valsartan)',
-            'S — Spironolactone/Eplerenone: Indicated if EF ≤40% with HF symptoms OR diabetes. Eplerenone 25-50 mg OD preferred (more selective, fewer gynecomastia effects vs Spironolactone). Monitor K+ (hyperkalemia risk with ACEi+MRA combination)'
+            'B — Beta-blocker',
+            'A — Antiplatelet (Dual)',
+            'S — Statin (High-Intensity)',
+            'E — ACE inhibitor',
+            'S — Spironolactone (if EF <40%)'
           ]
         }
       ]
-    },
-    tags: ['STEMI', 'tenecteplase', 'clopidogrel', 'pantoprazole', 'secondary-prevention'],
-    source: 'seed',
-    created_at: '2025-01-20T00:00:00Z',
+    }
   },
+  
   // CASE 21: ENDOCRINE — DKA
   {
     id: 'seed-021',
     title: 'Diabetic Ketoacidosis (DKA) Management',
     subject_area: 'endocrine',
     difficulty: 'hard',
-    patient_snapshot: {
-      name: 'Ravi Shankar',
-      age: 32,
-      sex: 'M',
-      ward: 'Medical ICU',
-      bed: 'MICU-05',
-      presenting_complaint: 'Confusion, rapid deep breathing (Kussmaul), fruity breath odor, and severe dehydration. Type 1 DM diagnosed 10 years ago. Missed insulin doses for 3 days due to viral illness.',
-      pmh: ['Type 1 Diabetes Mellitus (10 years)'],
-      medications: [
-        { drug: 'IV Regular Insulin', dose: '0.1 units/kg/hr', frequency: 'Continuous infusion', route: 'IV' },
-        { drug: 'IV Normal Saline 0.9%', dose: '1 L/hr', frequency: 'First 2 hours', route: 'IV' },
-        { drug: 'Potassium Chloride', dose: '20 mEq/L in fluids', frequency: 'Continuous', route: 'IV' },
-      ],
-      allergies: [],
-      labs: [
-        { name: 'Blood Glucose', value: '480', unit: 'mg/dL', reference: '70-110', is_abnormal: true },
-        { name: 'pH', value: '7.15', unit: '', reference: '7.35-7.45', is_abnormal: true },
-        { name: 'HCO3-', value: '8', unit: 'mEq/L', reference: '22-28', is_abnormal: true },
-        { name: 'K+', value: '5.5', unit: 'mEq/L', reference: '3.5-5.0', is_abnormal: true },
-        { name: 'Anion Gap', value: '28', unit: 'mEq/L', reference: '8-12', is_abnormal: true },
-      ],
-    },
-    questions: [
-      {
-        id: 'q-021-1', case_id: 'seed-021',
-        question_text: 'Before starting IV insulin in DKA, what potassium threshold must be confirmed?',
-        option_a: 'K+ must be > 2.5 mEq/L',
-        option_b: 'K+ must be > 3.3 mEq/L — if below, hold insulin and replete K+ first to prevent fatal hypokalemia',
-        option_c: 'K+ must be > 5.0 mEq/L',
-        option_d: 'Potassium does not affect insulin safety',
-        correct_option: 'B',
-        pci_duty_category: 'treatment_chart_review',
-        question_type: 'mcq',
-        explanation_text: 'Insulin drives potassium intracellularly. In DKA, total body K+ is already depleted despite possibly normal/high serum levels (due to acidosis shifting K+ out of cells). Starting insulin without confirming K+ > 3.3 mEq/L can cause fatal cardiac arrhythmias from hypokalemia.',
-        subject_reference: 'Pharmacotherapeutics - Endocrine',
-      },
-      {
-        id: 'q-021-2', case_id: 'seed-021',
-        question_text: 'When blood glucose drops to 200-250 mg/dL, what fluid transition should be made?',
-        option_a: 'Stop all IV fluids',
-        option_b: 'Switch to Dextrose 5% in 0.45% NaCl (D5 half-NS) and reduce insulin rate to 0.02-0.05 units/kg/hr to prevent hypoglycemia while continuing to close the anion gap',
-        option_c: 'Switch to Ringer\'s Lactate at the same rate',
-        option_d: 'Give oral glucose tablets',
-        correct_option: 'B',
-        pci_duty_category: 'treatment_chart_review',
-        question_type: 'mcq',
-        explanation_text: 'Blood glucose corrects faster than ketoacidosis. Switching to dextrose-containing fluids prevents hypoglycemia while allowing continued insulin infusion to clear ketones and close the anion gap. Insulin should not be stopped until the anion gap normalizes.',
-        subject_reference: 'Pharmacotherapeutics - Endocrine',
-      },
-      {
-        id: 'q-021-3', case_id: 'seed-021',
-        question_text: 'What criteria must be met before transitioning from IV insulin infusion to subcutaneous insulin?',
-        option_a: 'Blood glucose < 200 mg/dL alone',
-        option_b: 'At least 2 of: pH > 7.30, HCO3- > 18, anion gap < 12, AND patient is able to eat. Overlap SC insulin with IV for 1-2 hours.',
-        option_c: 'Patient\'s nausea has resolved',
-        option_d: 'After exactly 24 hours of IV insulin regardless of labs',
-        correct_option: 'B',
-        pci_duty_category: 'drug_therapy_monitoring',
-        question_type: 'mcq',
-        explanation_text: 'DKA resolution criteria include pH > 7.30, HCO3- > 18 mEq/L, and anion gap normalization. The IV insulin infusion must overlap with the first SC insulin dose by 1-2 hours because IV insulin has a half-life of only 5 minutes — stopping it without overlap causes a dangerous gap.',
-        subject_reference: 'Pharmacotherapeutics - Endocrine',
-      },
-    ],
+    tags: ['DKA', 'Insulin Infusion', 'Hypokalemia', 'Anion Gap'],
     phases: [
       {
         id: 'seed-021-phase-1',
@@ -3884,8 +6541,8 @@ export const seedCases: ClinicalCase[] = [
           presenting_complaint: 'DKA with Kussmaul breathing.',
           pmh: ['Type 1 DM'],
           medications: [
-            { drug: 'IV Regular Insulin', dose: '0.1 units/kg/hr', frequency: 'Continuous', route: 'IV' },
             { drug: 'IV NS 0.9%', dose: '1 L/hr', frequency: 'First 2 hours', route: 'IV' },
+            { drug: 'IV Regular Insulin', dose: '0.1 units/kg/hr', frequency: 'Continuous', route: 'IV' },
           ],
           allergies: [],
           labs: [
@@ -3899,108 +6556,148 @@ export const seedCases: ClinicalCase[] = [
             id: 'q-021-1', case_id: 'seed-021',
             question_text: 'What K+ threshold must be met before starting insulin?',
             option_a: 'K+ > 2.5',
-            option_b: 'K+ > 3.3 — hold insulin and replete K+ first if below',
+            option_b: 'K+ > 3.3 mEq/L — hold insulin and replete K+ first if below.',
             option_c: 'K+ > 5.0',
-            option_d: 'K+ is irrelevant',
+            option_d: 'K+ is irrelevant.',
             correct_option: 'B',
             pci_duty_category: 'treatment_chart_review',
-            question_type: 'mcq',
-            explanation_text: 'Insulin drives K+ intracellularly — risk of fatal hypokalemia.',
+            question_type: 'mar_action',
+            target_drug: 'IV Regular Insulin',
+            explanation_text: 'Insulin drives K+ intracellularly. If K+ is <3.3, starting insulin will cause fatal hypokalemia.',
             subject_reference: 'Pharmacotherapeutics - Endocrine',
           },
           {
             id: 'q-021-2', case_id: 'seed-021',
-            question_text: 'What fluid change when glucose hits 200-250?',
-            option_a: 'Stop all IV fluids',
-            option_b: 'Switch to D5 half-NS and reduce insulin rate',
-            option_c: 'Switch to RL',
-            option_d: 'Oral glucose',
+            question_text: 'Why is Routine Sodium Bicarbonate NOT recommended for his pH of 7.15?',
+            option_a: 'It is too expensive.',
+            option_b: 'Bicarbonate is only indicated for pH < 6.9; otherwise it worsens hypokalemia and causes paradoxical CNS acidosis.',
+            option_c: 'It causes hypoglycemia.',
+            option_d: 'It destroys insulin.',
+            correct_option: 'B',
+            pci_duty_category: 'evaluate',
+            question_type: 'mcq',
+            explanation_text: 'Bicarb shifts K+ into cells and converts to CO2, which crosses the BBB and worsens brain acidosis. Use only in severe life-threatening acidemia.',
+            subject_reference: 'Pharmacotherapeutics - Endocrine'
+          }
+        ]
+      },
+      {
+        id: 'seed-021-phase-2',
+        title: 'Hour 6: Fluid Transition',
+        description: 'Blood glucose drops to 220 mg/dL, but anion gap is still 18.',
+        patient_snapshot: {
+          name: 'Ravi Shankar', age: 32, sex: 'M', ward: 'MICU', bed: 'MICU-05',
+          presenting_complaint: 'Glucose resolving, still acidotic.',
+          pmh: [],
+          medications: [],
+          allergies: [],
+          labs: [
+            { name: 'Blood Glucose', value: '220', unit: 'mg/dL', reference: '70-110', is_abnormal: true },
+            { name: 'Anion Gap', value: '18', unit: 'mEq/L', reference: '8-12', is_abnormal: true }
+          ]
+        },
+        questions: [
+          {
+            id: 'q-021-3', case_id: 'seed-021',
+            question_text: 'What fluid change is required now that glucose is ~200 mg/dL?',
+            option_a: 'Stop all IV fluids.',
+            option_b: 'Switch to Dextrose 5% in 0.45% NaCl (D5 half-NS) to prevent hypoglycemia while keeping insulin running.',
+            option_c: 'Switch to RL.',
+            option_d: 'Oral glucose.',
             correct_option: 'B',
             pci_duty_category: 'treatment_chart_review',
             question_type: 'mcq',
-            explanation_text: 'Glucose corrects faster than ketosis; add dextrose to keep closing anion gap.',
+            explanation_text: 'Glucose corrects faster than ketosis. You must add dextrose to allow continuous insulin infusion to close the anion gap.',
             subject_reference: 'Pharmacotherapeutics - Endocrine',
           },
           {
-            id: 'q-021-3', case_id: 'seed-021',
-            question_text: 'Criteria for transitioning IV to SC insulin?',
-            option_a: 'Glucose < 200 alone',
-            option_b: 'pH > 7.30, HCO3- > 18, AG < 12, can eat; overlap SC with IV 1-2h',
-            option_c: 'Nausea resolved',
-            option_d: 'After 24h regardless',
+            id: 'q-021-4', case_id: 'seed-021',
+            question_text: 'What happens if you stop the insulin infusion right now because glucose is normal?',
+            option_a: 'Patient is cured.',
+            option_b: 'Rebound ketoacidosis, because the anion gap is still open (ketones are still present).',
+            option_c: 'Hypoglycemia.',
+            option_d: 'Hypokalemia.',
+            correct_option: 'B',
+            pci_duty_category: 'evaluate',
+            question_type: 'mcq',
+            explanation_text: 'DKA resolution is defined by ketone clearance (closed anion gap), not just euglycemia.',
+            subject_reference: 'Endocrinology'
+          }
+        ]
+      },
+      {
+        id: 'seed-021-phase-3',
+        title: 'Day 2: Transition to SC Insulin',
+        description: 'Anion gap is closed (10). Ready for subcutaneous insulin.',
+        patient_snapshot: {
+          name: 'Ravi Shankar', age: 32, sex: 'M', ward: 'MICU', bed: 'MICU-05',
+          presenting_complaint: 'Ready to eat.',
+          pmh: [],
+          medications: [],
+          allergies: [],
+          labs: []
+        },
+        questions: [
+          {
+            id: 'q-021-5', case_id: 'seed-021',
+            question_text: 'What criteria must be met before transitioning from IV to SC insulin?',
+            option_a: 'Glucose < 200 alone.',
+            option_b: 'pH > 7.30, HCO3- > 18, Anion Gap < 12, AND patient is able to eat.',
+            option_c: 'Nausea resolved.',
+            option_d: 'After 24h regardless.',
             correct_option: 'B',
             pci_duty_category: 'drug_therapy_monitoring',
             question_type: 'mcq',
-            explanation_text: 'IV insulin t1/2 = 5 min; must overlap with SC dose.',
+            explanation_text: 'These indicate true resolution of ketoacidosis.',
             subject_reference: 'Pharmacotherapeutics - Endocrine',
           },
+          {
+            id: 'q-021-6', case_id: 'seed-021',
+            question_text: 'How should the IV to SC transition be physically managed?',
+            option_a: 'Stop IV immediately, give SC.',
+            option_b: 'Overlap the SC basal insulin dose with the IV infusion for 1-2 hours before stopping the IV pump.',
+            option_c: 'Wait 4 hours after stopping IV.',
+            option_d: 'Give double SC dose.',
+            correct_option: 'B',
+            pci_duty_category: 'treatment_chart_review',
+            question_type: 'mcq',
+            explanation_text: 'IV insulin has a 5-minute half-life. Without a 1-2 hour overlap with SC insulin, the patient will experience an insulin gap and relapse.',
+            subject_reference: 'Pharmacotherapeutics'
+          }
         ]
       }
     ],
     study_guide: {
       guidelines: [
         {
-          title: 'ADA Standards of Medical Care in Diabetes — DKA Management (2023)',
+          title: 'ADA Standards of Care — DKA (2023)',
           organization: 'ADA',
-          text: 'DKA DIAGNOSTIC CRITERIA: (1) Blood glucose >250 mg/dL (usually >300); (2) Arterial pH <7.3; (3) Serum bicarbonate <18 mEq/L; (4) Presence of ketonemia (serum ketones ≥3 mmol/L) or ketonuria (≥2+ on dipstick). Severity: Mild (pH 7.25-7.30, HCO3 15-18); Moderate (pH 7.00-7.24, HCO3 10-15, altered sensorium); Severe (pH <7.00, HCO3 <10, stupor/coma). TREATMENT: (1) FLUIDS: Normal Saline 1-1.5 L/h for first 1-2 hours. Then 250-500 mL/h of NS. Once BG <200 mg/dL: CHANGE TO DEXTROSE-SALINE (D5W with 0.45% NaCl) to prevent cerebral edema from rapid glucose correction. (2) INSULIN: Regular Insulin IV at 0.1 units/kg/h. Start insulin only AFTER confirming K+ ≥3.3 mEq/L (insulin drives K+ into cells → fatal hypokalemia if K+ already low). (3) POTASSIUM: If K+ <3.3: Give KCl 40 mEq/h IV before starting insulin. If K+ 3.3-5.5: Add 20-40 mEq/L KCl to each litre of fluid. If K+ >5.5: Hold KCl, recheck Q2H. (4) BICARBONATE: Only if pH <6.9 (severe life-threatening acidosis). Give 100 mEq NaHCO3 over 2h.'
-        },
-        {
-          title: 'DKA Fluid and Electrolyte Management — Complete Protocol',
-          organization: 'JBDS-IP (Joint British Diabetes Societies)',
-          text: 'JBDS DKA Protocol (UK Standard): Fluid Resuscitation Rate: 500 mL NS over 15 min (if SBP <90) → 500 mL over 15 min again → 1L over 30 min → 1L over 1h → 1L over 2h → 1L over 4h → 1L over 8h. INSULIN: Fixed-rate insulin infusion (FRII): 0.1 units/kg/h via syringe pump. Use ONLY Human Regular Insulin (Actrapid/Humulin R) — NOT Insulin Lispro or Glargine for IV infusion. DO NOT stop basal insulin (Insulin Glargine/Detemir) — this prevents rebound ketosis. Stop FRII only when: (1) BG <14 mmol/L (<252 mg/dL), (2) pH ≥7.3, (3) HCO3 ≥18 mEq/L, and (4) Patient eating and able to take subcutaneous insulin. RESOLUTION: Transition to SC insulin 30 min before stopping IV infusion to prevent recurrence. Cerebral edema warning (primarily pediatric): Headache, altered sensorium, bradycardia, hypertension during DKA treatment = administer Mannitol 0.5-1 g/kg IV STAT.'
-        },
-        {
-          title: 'Insulin Therapy — Management of Hypokalemia Risk During DKA',
-          organization: 'Endocrine Society Clinical Practice Guideline',
-          text: 'DKA causes TOTAL BODY potassium DEPLETION despite initial normal or elevated serum K+. Mechanism: Metabolic acidosis drives H+ into cells → K+ shifts OUT of cells into serum (exchange). Insulin deficiency prevents cellular K+ uptake. Therefore, initial serum K+ can be NORMAL or HIGH even though TOTAL BODY K+ is severely depleted. CRITICAL DANGER: Once insulin is given → K+ rapidly shifts INTO cells → serum K+ falls dramatically → HYPOKALEMIA (K+ <3.0) can cause FATAL arrhythmias (VF, torsades de pointes). PROTOCOL: Check K+ BEFORE starting insulin. If K+: <3.3 mEq/L → Hold insulin, replace K+ at 40 mEq/h; 3.3-5.5 mEq/L → Start insulin + add 20-40 mEq K+ per litre of replacement fluid; >5.5 mEq/L → Start insulin, no K+ supplementation. Recheck K+ every 2 hours for first 12 hours. PHOSPHATE: PO4 replacement only if <1 mg/dL or cardiac/respiratory muscle weakness (most mild-moderate DKA does not require PO4 replacement).'
+          text: 'Fluid first, check K+, then insulin. Switch to D5NS when BG <200. Never stop basal insulin if already on it.'
         }
       ],
-      calculations: [
-        {
-          name: 'DKA Insulin Infusion Rate (0.1 units/kg/h)',
-          formula: 'Insulin dose = 0.1 units/kg/h. Prepare: 50 units Regular Insulin in 50 mL NS = 1 unit/mL. Rate = 0.1 × weight in mL/h',
-          explanation: 'Patient with DKA (assume 60 kg): Insulin = 0.1 × 60 = 6 units/h = 6 mL/h of standard 1 unit/mL insulin syringe. Target glucose reduction: 50-75 mg/dL/hour (not faster to avoid cerebral edema). If glucose falls >100 mg/dL/h: reduce insulin rate by 50%. At glucose <200 mg/dL: switch IV fluid to D5NS or D5W 0.45% NS and continue insulin at 0.05-0.1 units/kg/h to clear ketones. NEVER stop insulin until ketones cleared (HCO3 ≥18, pH ≥7.3) even if glucose normalizes — otherwise rebound ketosis.'
-        },
-        {
-          name: 'Corrected Sodium in DKA (Hyperglycemia-Adjusted)',
-          formula: 'Corrected Na = Measured Na + 1.6 × [(Glucose - 100) / 100] mEq/L',
-          explanation: 'In DKA, hyperglycemia creates osmotic gradient drawing water from cells into plasma, diluting serum sodium (pseudohyponatremia). The corrected sodium reveals true sodium status. Example: Measured Na = 128 mEq/L, Glucose = 500 mg/dL. Corrected Na = 128 + 1.6×[(500-100)/100] = 128 + 1.6×4 = 128 + 6.4 = 134.4 mEq/L (essentially normal). As glucose falls with treatment, sodium rises (water moves back into cells). If corrected Na is HIGH (>145 mEq/L): switch to hypotonic fluid (0.45% NaCl) to avoid hypernatremia as glucose normalizes. If corrected Na is LOW (<130): may need to reassess fluid strategy.'
-        }
-      ],
+      calculations: [],
       reasoning: [
         {
-          question_text: 'Why must insulin be WITHHELD until potassium is ≥3.3 mEq/L in DKA?',
-          rationale: 'Insulin activates Na+/K+-ATPase in all cells, actively pumping K+ INTO the intracellular compartment. In DKA, patients are TOTAL BODY K+ depleted (from osmotic diuresis, vomiting, and metabolic acidosis). Despite this depletion, SERUM K+ may initially appear normal or elevated because acidosis shifts K+ OUT of cells (H+/K+ exchange). Once insulin is started: (1) K+ rapidly moves back into cells (insulin effect); (2) Simultaneous acidosis correction (HCO3 rises) also shifts K+ intracellularly; (3) Serum K+ can plummet from 4.0 to 2.5 mEq/L within 2 hours. At K+ <2.5 mEq/L: FATAL ventricular arrhythmias (Torsades de Pointes, VF) can occur. Therefore: checking K+ BEFORE insulin and maintaining K+ supplementation during DKA is a CRITICAL pharmacist intervention.'
-        },
-        {
-          question_text: 'Why do we switch from Normal Saline to Dextrose-Saline when blood glucose drops below 200 mg/dL?',
-          rationale: 'The danger in DKA is CEREBRAL EDEMA from rapid glucose correction. When hyperglycemia resolves rapidly (>100 mg/dL/hour), plasma osmolality drops suddenly, creating an osmotic gradient between the blood (now hypotonic) and the brain (still hyperosmolar from accumulated organic osmoles). Water flows into brain cells → cerebral edema → herniation. This risk is highest in children. By switching to D5W-containing fluids (adding dextrose) when BG <200 mg/dL: (1) We SLOW further glucose reduction, allowing gradual osmolar correction; (2) We can continue insulin at the therapeutic dose to clear KETONES (NOT just glucose). DKA is resolved by clearing ketones, not just glucose. Ketosis clearance requires continuous insulin. Adding dextrose allows insulin to continue without causing dangerous hypoglycemia.'
-        },
-        {
-          question_text: 'Why is SGLT2 inhibitor-induced DKA (euglycemic DKA) a particular diagnostic challenge?',
-          rationale: 'Traditional DKA criteria require blood glucose >250 mg/dL. However, SGLT2 inhibitors (Dapagliflozin, Empagliflozin, Canagliflozin) can cause DKA with GLUCOSE LEVELS THAT ARE NORMAL OR ONLY MILDLY ELEVATED (typically 150-250 mg/dL) — termed "EUGLYCEMIC DKA". Mechanism: SGLT2 inhibitors promote glucose excretion in urine (lowering blood glucose) while simultaneously causing a shift in substrate metabolism toward fat oxidation and ketone production (via glucagon:insulin ratio increase and direct renal ketone retention). The low/normal glucose masks the diagnosis — patients may not appear "classically" hyperglycemic but are severely ketoacidotic. CLINICAL TRAP: Patient on empagliflozin presenting with vomiting, malaise, and shortness of breath — check KETONES and ABG even if glucose appears "normal." This is a pharmacist-critical drug safety alert.'
+          question_text: 'Why does DKA cause pseudohyponatremia?',
+          rationale: 'Hyperglycemia pulls water from cells into blood, diluting serum sodium. Corrected Na = Measured Na + 1.6 * (Glucose-100)/100.'
         }
       ],
       mnemonics: [
         {
-          name: 'DKA Management Algorithm (3-I-F-B)',
-          concept: 'DKA treatment sequence — remember FLUIDS first, then INSULIN, always MONITOR POTASSIUM',
+          name: 'DKA Algorithm (3-I-F-B)',
+          concept: 'DKA Sequence',
           bullets: [
-            '3 — THREE DIAGNOSITC CRITERIA: High glucose (>250) + Low pH (<7.3) + Ketones present. All 3 MUST be present.',
-            'I — IV ACCESS + IMMEDIATE POTASSIUM CHECK: Never start insulin if K+ <3.3 mEq/L. Give KCl 20-40 mEq/h first.',
-            'F — FLUIDS FIRST: 1-1.5 L NS over 1st hour. Then 500 mL/h × 2h. When BG <200: switch to D5NS (prevents cerebral edema and allows continued insulin).',
-            'B — BICARBONATE: Only for pH <6.9. 100 mEq NaHCO3 in 400 mL sterile water over 2h. Routine bicarbonate worsens hypokalemia and paradoxical CSF acidosis.',
-            'INSULIN: 0.1 units/kg/h IV Regular Insulin ONLY after K+ ≥3.3. Add 20-40 mEq KCl per litre of replacement fluid to maintain K+ 4-5 mEq/L.',
-            'RESOLUTION CRITERIA: pH ≥7.3 AND HCO3 ≥18 AND Anion Gap ≤12 AND ketones cleared. Only THEN transition to SC insulin.',
-            'NEVER STOP BASAL INSULIN (Glargine/Detemir) during DKA hospitalization — stopping basal causes rebound ketosis.'
+            '3 — 3 Criteria (High BG, Low pH, Ketones)',
+            'I — IV access + Check K+',
+            'F — Fluids first (NS)',
+            'B — Bicarbonate only if pH <6.9'
           ]
         }
       ]
-    },
-    tags: ['DKA', 'insulin-infusion', 'hypokalemia', 'anion-gap', 'dextrose'],
-    source: 'seed',
-    created_at: '2025-01-20T00:00:00Z',
-  },
+    }
+  }
+];
+        },        
   // CASE 22: ONCOLOGY/HEMATOLOGY — HIT
   {
     id: 'seed-022',
